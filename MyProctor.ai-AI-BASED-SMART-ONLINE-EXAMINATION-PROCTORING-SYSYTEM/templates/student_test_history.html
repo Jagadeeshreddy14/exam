@@ -1,0 +1,502 @@
+{% extends 'student_dashboard.html' %}
+{% block body %}
+<style>
+    /* ===== DARK THEME ENHANCEMENTS FOR EXAM HISTORY ===== */
+    :root {
+        --dark-bg: #0f172a;
+        --dark-card: #1e293b;
+        --dark-card-hover: #2d3748;
+        --dark-border: #334155;
+        --dark-text: #f1f5f9;
+        --dark-text-secondary: #94a3b8;
+        --dark-primary: #3b82f6;
+        --dark-primary-hover: #2563eb;
+        --dark-accent: #8b5cf6;
+        --dark-success: #10b981;
+        --dark-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        --dark-shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.4);
+        --gradient-primary: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+    }
+
+    /* Main container */
+    .row.align-items-center.d-flex.justify-content-center {
+        min-height: 80vh;
+        padding: 2rem 1rem;
+        background: var(--dark-bg);
+    }
+
+    /* Card enhancements */
+    .card.border-light.shadow-sm.components-section {
+        background: var(--dark-card) !important;
+        border: 1px solid var(--dark-border) !important;
+        border-radius: 20px;
+        box-shadow: var(--dark-shadow-lg) !important;
+        backdrop-filter: blur(10px);
+        max-width: 1200px;
+        width: 100%;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card.border-light.shadow-sm.components-section:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--dark-shadow-lg), 0 15px 40px rgba(59, 130, 246, 0.1) !important;
+    }
+
+    /* Header enhancements */
+    .h3.text-center {
+        color: var(--dark-text) !important;
+        font-weight: 700;
+        font-size: 2.5rem;
+        margin: 2rem 0 3rem 0;
+        position: relative;
+        padding-bottom: 1rem;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .h3.text-center::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 150px;
+        height: 4px;
+        background: var(--gradient-primary);
+        border-radius: 2px;
+    }
+
+    /* Table enhancements */
+    .table-responsive {
+        border-radius: 12px;
+        overflow: hidden;
+        background: rgba(30, 41, 59, 0.8);
+        margin: 1rem 0;
+    }
+
+    .table.table-centered.table-nowrap.mb-0.rounded {
+        margin: 0;
+        border-collapse: separate;
+        border-spacing: 0;
+        width: 100%;
+        background: transparent;
+    }
+
+    /* Table header */
+    .thead-light {
+        background: rgba(15, 23, 42, 0.9) !important;
+    }
+
+    .thead-light tr {
+        background: var(--gradient-primary) !important;
+    }
+
+    .thead-light th {
+        border: none !important;
+        color: white !important;
+        font-weight: 600 !important;
+        font-size: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 1.25rem 1.5rem !important;
+        position: relative;
+    }
+
+    .thead-light th:not(:last-child)::after {
+        content: '';
+        position: absolute;
+        right: 0;
+        top: 20%;
+        height: 60%;
+        width: 1px;
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    .thead-light th.border-0 {
+        border: none !important;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.1) !important;
+    }
+
+    /* Table body */
+    tbody tr {
+        background: rgba(30, 41, 59, 0.5);
+        transition: all 0.3s ease;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    tbody tr:hover {
+        background: rgba(59, 130, 246, 0.1) !important;
+        transform: translateX(5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    tbody tr:nth-child(even) {
+        background: rgba(30, 41, 59, 0.7);
+    }
+
+    tbody tr:nth-child(even):hover {
+        background: rgba(59, 130, 246, 0.15) !important;
+    }
+
+    tbody td {
+        color: var(--dark-text) !important;
+        font-weight: 500;
+        padding: 1.25rem 1.5rem !important;
+        border: none !important;
+        vertical-align: middle;
+        position: relative;
+    }
+
+    /* Test ID cell with special styling */
+    tbody td:first-child {
+        font-weight: 600;
+        color: var(--dark-primary) !important;
+        font-family: 'Courier New', monospace;
+        position: relative;
+    }
+
+    tbody td:first-child::before {
+        content: '#';
+        color: var(--dark-text-secondary);
+        margin-right: 4px;
+        opacity: 0.7;
+    }
+
+    /* Subject and Topic cells */
+    tbody td:nth-child(2) {
+        color: var(--dark-success) !important;
+        font-weight: 500;
+    }
+
+    tbody td:nth-child(3) {
+        color: var(--dark-text-secondary) !important;
+    }
+
+    /* Table row separators */
+    tbody tr:not(:last-child) td {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+    }
+
+    /* Empty state styling */
+    .col-lg-12.col-sm-16 center {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem 1rem;
+    }
+
+    lottie-player {
+        filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.3));
+        transition: transform 0.5s ease;
+    }
+
+    lottie-player:hover {
+        transform: scale(1.05);
+    }
+
+    /* No records found text */
+    .col-lg-12.col-sm-16 h3.h3.text-center {
+        margin-top: 2rem;
+        font-size: 1.75rem;
+        color: var(--dark-text-secondary) !important;
+        -webkit-text-fill-color: var(--dark-text-secondary);
+        background: none;
+    }
+
+    .col-lg-12.col-sm-16 h3.h3.text-center::after {
+        display: none;
+    }
+
+    /* Card body adjustments */
+    .card-body.align-items-center.d-flex.justify-content-center {
+        padding: 2rem !important;
+        width: 100%;
+    }
+
+    .card-body.justify-content-md-center {
+        padding: 1rem !important;
+        width: 100%;
+    }
+
+    /* Animation for table rows */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    tbody tr {
+        animation: fadeInUp 0.5s ease-out;
+        animation-fill-mode: both;
+    }
+
+    tbody tr:nth-child(1) { animation-delay: 0.1s; }
+    tbody tr:nth-child(2) { animation-delay: 0.2s; }
+    tbody tr:nth-child(3) { animation-delay: 0.3s; }
+    tbody tr:nth-child(4) { animation-delay: 0.4s; }
+    tbody tr:nth-child(5) { animation-delay: 0.5s; }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+        .h3.text-center {
+            font-size: 2rem;
+            margin: 1.5rem 0;
+        }
+        
+        .table-responsive {
+            margin: 0 -1rem;
+            border-radius: 0;
+        }
+        
+        .thead-light th,
+        tbody td {
+            padding: 1rem !important;
+            font-size: 0.9rem;
+        }
+        
+        lottie-player {
+            width: 250px !important;
+            height: 250px !important;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .card.border-light.shadow-sm.components-section {
+            margin: 0 0.5rem;
+        }
+        
+        .thead-light th,
+        tbody td {
+            padding: 0.75rem 0.5rem !important;
+            font-size: 0.85rem;
+        }
+        
+        .h3.text-center {
+            font-size: 1.5rem;
+        }
+    }
+
+    /* Scrollbar styling */
+    .table-responsive::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    .table-responsive::-webkit-scrollbar-track {
+        background: rgba(30, 41, 59, 0.5);
+        border-radius: 4px;
+    }
+
+    .table-responsive::-webkit-scrollbar-thumb {
+        background: var(--dark-primary);
+        border-radius: 4px;
+    }
+
+    .table-responsive::-webkit-scrollbar-thumb:hover {
+        background: var(--dark-primary-hover);
+    }
+
+    /* Status indicators (if added in future) */
+    .status-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .status-completed {
+        background: rgba(16, 185, 129, 0.2);
+        color: #10b981;
+        border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .status-pending {
+        background: rgba(245, 158, 11, 0.2);
+        color: #f59e0b;
+        border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .status-failed {
+        background: rgba(239, 68, 68, 0.2);
+        color: #ef4444;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    /* Action buttons (if added in future) */
+    .action-btn {
+        padding: 0.5rem 1rem;
+        background: rgba(59, 130, 246, 0.1);
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        color: var(--dark-primary);
+        border-radius: 8px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .action-btn:hover {
+        background: rgba(59, 130, 246, 0.2);
+        border-color: var(--dark-primary);
+        transform: translateY(-2px);
+    }
+
+    /* Table header icons */
+    .table-header-icon {
+        margin-right: 0.5rem;
+        opacity: 0.8;
+    }
+
+    /* Loading skeleton (for future enhancement) */
+    .skeleton {
+        background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%);
+        background-size: 200% 100%;
+        animation: loading 1.5s infinite;
+        border-radius: 4px;
+    }
+
+    @keyframes loading {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+    }
+</style>
+
+<div class="row align-items-center d-flex justify-content-center">
+    <div class="col-12 mb-4">
+        <div class="card border-light shadow-sm components-section align-items-center d-flex justify-content-center">
+            <div class="card-body align-items-center d-flex justify-content-center">
+                <div class="row mb-4">
+                    {% if(tests is not none and tests) %}
+                    <div class="col-lg-12 col-sm-16">
+                        <h3 class="h3 text-center">EXAM HISTORY</h3>
+                    </div>
+                    <div class="card-body justify-content-md-center">
+                        <div class="table-responsive">
+                            <table class="table table-centered table-nowrap mb-0 rounded">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th class="border-0" scope="col">
+                                            <i class="fas fa-hashtag table-header-icon"></i>Test ID
+                                        </th>
+                                        <th class="border-0" scope="col">
+                                            <i class="fas fa-book table-header-icon"></i>Subject
+                                        </th>
+                                        <th class="border-0" scope="col">
+                                            <i class="fas fa-folder table-header-icon"></i>Topic
+                                        </th>
+                                        {% if tests[0].get('score') or tests[0].get('date') %}
+                                        <!-- Additional columns if available in data -->
+                                        <th class="border-0" scope="col">
+                                            <i class="fas fa-chart-line table-header-icon"></i>Score
+                                        </th>
+                                        <th class="border-0" scope="col">
+                                            <i class="fas fa-calendar-alt table-header-icon"></i>Date
+                                        </th>
+                                        {% endif %}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for test in tests %}
+                                    <tr>
+                                        <td>{{test['test_id']}}</td>
+                                        <td>{{test['subject']}}</td>
+                                        <td>{{test['topic']}}</td>
+                                        {% if test.get('score') %}
+                                        <td>
+                                            <span class="status-badge 
+                                                {% if test['score'] >= 80 %}status-completed
+                                                {% elif test['score'] >= 50 %}status-pending
+                                                {% else %}status-failed{% endif %}">
+                                                {{test['score']}}%
+                                            </span>
+                                        </td>
+                                        {% endif %}
+                                        {% if test.get('date') %}
+                                        <td>{{test['date']}}</td>
+                                        {% endif %}
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="col-lg-12 col-sm-16">
+                        <center>
+                            <lottie-player 
+                                src="https://assets7.lottiefiles.com/datafiles/vhvOcuUkH41HdrL/data.json" 
+                                background="transparent" 
+                                speed="1" 
+                                style="width: 300px; height: 300px;" 
+                                loop 
+                                autoplay>
+                            </lottie-player>
+                        </center>
+                        <h3 class="h3 text-center">
+                            No Exam Records Found!
+                        </h3>
+                        <p class="text-center text-muted mt-2">
+                            You haven't taken any exams yet. Exams will appear here once completed.
+                        </p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Add interactive features
+    document.addEventListener('DOMContentLoaded', function() {
+        const tableRows = document.querySelectorAll('tbody tr');
+        
+        // Add click event to rows for possible expansion
+        tableRows.forEach(row => {
+            row.addEventListener('click', function(e) {
+                if (!e.target.closest('.action-btn')) {
+                    this.classList.toggle('expanded');
+                }
+            });
+        });
+        
+        // Add tooltip for test IDs
+        const testIDs = document.querySelectorAll('td:first-child');
+        testIDs.forEach(td => {
+            td.title = 'Click to view exam details';
+        });
+        
+        // Smooth scroll to table
+        if (window.location.hash === '#exam-history') {
+            const table = document.querySelector('.table-responsive');
+            if (table) {
+                table.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+        
+        // Add animation delay for empty state
+        const lottiePlayer = document.querySelector('lottie-player');
+        if (lottiePlayer) {
+            setTimeout(() => {
+                lottiePlayer.style.opacity = '1';
+                lottiePlayer.style.transform = 'scale(1)';
+            }, 300);
+        }
+    });
+</script>
+{% endblock %}

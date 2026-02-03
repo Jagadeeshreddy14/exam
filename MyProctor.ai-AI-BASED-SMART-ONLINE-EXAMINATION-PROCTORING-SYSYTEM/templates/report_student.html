@@ -1,0 +1,44 @@
+{% extends 'student_dashboard.html' %}
+{% block body %}
+<div class="row align-items-center justify-content-center mt-4">
+    <div class="col-12 col-lg-8 col-xl-6">
+        <div class="card border-light shadow-sm components-section">
+            <div class="card-header text-center bg-primary text-white py-4">
+                <h3 class="h3 mb-0"><i class="fas fa-bug me-2"></i>REPORT PROBLEMS</h3>
+                <p class="mb-0 opacity-75">Let us know if you're experiencing any issues</p>
+            </div>
+            <div class="card-body p-4">
+                <div class="text-center mb-4">
+                    <img src="{{ url_for('static', filename='report_bug.png') }}" alt="Report Issues" class="img-fluid" style="max-height: 150px;">
+                </div>
+                
+                <form action="/report_student_email" method="POST" class="mt-4">
+                    <div class="mb-4">
+                        <label for="prob_type" class="form-label fw-bold">Problem Category</label>
+                        <select class="form-select form-control-lg" id="prob_type" name="prob_type" required>
+                            <option value="" disabled selected>Select a category</option>
+                            <option value="Login/Register/Face Verification">Login/Register/Face Verification/Logout</option>
+                            <option value="Give Exam/Exam History">Give Exam/Exam History</option>
+                            <option value="Student Monitoring">Results</option>
+                            <option value="Others">Others</option>
+                        </select>
+                        <div class="form-text">Select the category that best describes your issue</div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="rquery" class="form-label fw-bold">Describe Your Issue</label>
+                        <textarea name="rquery" id="rquery" class="form-control" placeholder="Please provide detailed information about the problem you're experiencing. Include steps to reproduce if applicable." rows="5" required></textarea>
+                        <div class="form-text">Be as specific as possible to help us resolve your issue quickly</div>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-paper-plane me-2"></i>Submit Report
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MyProctor.ai</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.4.0/css/all.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+  <!-- Favicon -->
+  <link rel="apple-touch-icon" sizes="120x120" href="{{ url_for('static', filename='volt/assets/img/favicon/apple-touch-icon.png') }}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='volt/assets/img/favicon/favicon-32x32.png') }}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='volt/assets/img/favicon/favicon-16x16.png') }}">
+  <link rel="manifest" href="{{ url_for('static', filename='volt/assets/img/favicon/site.webmanifest') }}">
+
+  <!-- Fontawesome -->
+  <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='volt/vendor/@fortawesome/fontawesome-free/css/all.min.css') }}">
+
+  <!-- Volt CSS -->
+  <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='volt/css/volt.css') }}">
+  <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/modern-theme.css') }}">
+  
+  <!-- jQuery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  
+  <!-- DataTables -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css">
+  <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.0/pdfmake.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.0/vfs_fonts.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
+
+  <!-- Lottie JS -->
+  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+
+  <style>
+    :root {
+      --dark-bg-primary: #121212;
+      --dark-bg-secondary: #1e1e1e;
+      --dark-bg-tertiary: #2d2d2d;
+      --dark-text-primary: #e0e0e0;
+      --dark-text-secondary: #b0b0b0;
+      --dark-border: #444;
+      --dark-accent: #3498db;
+      --dark-accent-hover: #2980b9;
+    }
+    
+    body {
+      display: flex;
+      min-height: 100vh;
+      background-color: var(--dark-bg-primary);
+      color: var(--dark-text-primary);
+    }
+    
+    .sidebar {
+      width: 260px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      background-color: var(--dark-bg-secondary);
+      border-right: 1px solid var(--dark-border);
+    }
+    
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      background-color: var(--dark-bg-primary);
+    }
+    
+    .navbar-dashboard {
+      background-color: var(--dark-bg-secondary);
+      border-bottom: 1px solid var(--dark-border);
+      min-height: 60px;
+    }
+    
+    #sticky-footer {
+      margin-top: auto;
+      background-color: var(--dark-bg-secondary);
+      border-top: 1px solid var(--dark-border);
+      color: var(--dark-text-secondary);
+    }
+    
+    .card {
+      background-color: var(--dark-bg-tertiary);
+      border: 1px solid var(--dark-border);
+      color: var(--dark-text-primary);
+    }
+    
+    .card-header {
+      background-color: var(--dark-bg-secondary);
+      border-bottom: 1px solid var(--dark-border);
+      color: var(--dark-text-primary);
+    }
+    
+    .table {
+      --bs-table-bg: var(--dark-bg-tertiary);
+      --bs-table-color: var(--dark-text-primary);
+      --bs-table-border-color: var(--dark-border);
+    }
+    
+    .btn-primary {
+      background-color: var(--dark-accent);
+      border-color: var(--dark-accent);
+    }
+    
+    .btn-primary:hover {
+      background-color: var(--dark-accent-hover);
+      border-color: var(--dark-accent-hover);
+    }
+    
+    .form-control {
+      background-color: var(--dark-bg-tertiary);
+      border: 1px solid var(--dark-border);
+      color: var(--dark-text-primary);
+    }
+    
+    .form-control:focus {
+      background-color: var(--dark-bg-tertiary);
+      border-color: var(--dark-accent);
+      color: var(--dark-text-primary);
+      box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+    }
+    
+    .form-select {
+      background-color: var(--dark-bg-tertiary);
+      border: 1px solid var(--dark-border);
+      color: var(--dark-text-primary);
+    }
+    
+    .nav-link {
+      color: var(--dark-text-secondary);
+    }
+    
+    .nav-link:hover {
+      color: var(--dark-text-primary);
+      background-color: var(--dark-bg-tertiary);
+    }
+    
+    .nav-link.active {
+      color: var(--dark-accent);
+      background-color: transparent;
+    }
+    
+    @media (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        left: -260px;
+        z-index: 999;
+        transition: left 0.3s;
+        width: 260px;
+        height: 100vh;
+        background-color: var(--dark-bg-secondary);
+      }
+      
+      .sidebar.show {
+        left: 0;
+      }
+      
+      body {
+        flex-direction: column;
+      }
+    }
+  </style>
+
+  {% block head %}{% endblock %}
+</head>
+  <body>
+        <nav class="navbar navbar-dark navbar-theme-primary px-4 col-12 d-md-none" style="background-color: var(--dark-bg-secondary); border-bottom: 1px solid var(--dark-border);">
+            <a class="navbar-brand me-lg-5" href="/professor_index">
+              <center><lottie-player src="https://assets1.lottiefiles.com/packages/lf20_wEt2nn.json"  background="transparent"  speed="1"  style="width: 75px; height: 50px;"  loop  autoplay></lottie-player></center>
+            </a>
+            <div class="d-flex align-items-center">
+                <button class="navbar-toggler d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
+        </nav>
+        
+        <nav id="sidebarMenu" class="sidebar d-md-block flex-md-column flex-row collapse" data-simplebar>
+          <div class="sidebar-inner px-4 pt-3">
+            <div class="user-card d-flex d-md-none align-items-center justify-content-between justify-content-md-center pb-4">
+              <div class="d-flex align-items-center">
+                <div class="user-avatar lg-avatar me-4">
+                  <img src="{{ url_for('static', filename='user-profile.png') }}" class="card-img-top rounded-circle"
+                    alt="Professor Profile" style="border: 2px solid var(--dark-accent);">
+                </div>
+                <div class="d-block">
+                  <h2 class="h6">{{session.name}}</h2>
+                  <a href ="#" onclick="return funLogout()"class="btn btn-outline-light btn-xs" style="background-color: var(--dark-accent); color: white;"><span
+                      class="me-2"><span class="fas fa-sign-out-alt"></span></span>Logout</a>
+                </div>
+              </div>
+              <div class="collapse-close d-md-none">
+                <a href="#sidebarMenu" class="fas fa-times" data-bs-toggle="collapse" data-bs-target="#sidebarMenu"
+                  aria-controls="sidebarMenu" aria-expanded="true" aria-label="Toggle navigation"></a>
+              </div>
+            </div>
+
+        <ul class="nav flex-column pt-3 pt-md-0">
+          <li class="nav-item">
+            <span
+              class="nav-link  collapsed  d-flex justify-content-between align-items-center"
+              data-bs-toggle="collapse" data-bs-target="#submenu-components">
+              <span>
+                <span class="sidebar-icon"><span class="fas fa-plus"></span></span>
+                <span class="sidebar-text">Create Exam</span>
+              </span>
+              <span class="link-arrow"><span class="fas fa-chevron-right"></span></span>
+            </span>
+            <div class="multi-level collapse " role="list"
+              id="submenu-components" aria-expanded="false">
+              <ul class="flex-column nav">
+                <li class="nav-item">
+                  <a class="nav-link"
+                    href="/create-test">
+                    <span class="sidebar-text">Objective</span>
+                  </a>
+                </li>
+                <li class="nav-item ">
+                  <a class="nav-link" href="/create_test_lqa">
+                    <span class="sidebar-text">Subjective</span>
+                  </a>
+                </li>
+                <li class="nav-item ">
+                  <a class="nav-link" href="/create_test_pqa">
+                    <span class="sidebar-text">Practical</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </li>
+          <li class="nav-item">
+            <a href="/generate_test" class="nav-link">
+              <span class="sidebar-icon"><span class="fas fa-magic"></span></span>
+              <span class="sidebar-text">Generate Questions</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="/viewquestions" class="nav-link d-flex justify-content-between">
+              <span>
+                <span class="sidebar-icon"><span class="fas fa-eye"></span></span>
+                <span class="sidebar-text">View Questions </span>
+              </span>
+            </a>
+          </li>
+          <li class="nav-item ">
+            <a href="/updatetidlist" class="nav-link">
+              <span class="sidebar-icon"><span class="fas fa-edit"></span></span>
+              <span class="sidebar-text">Update Questions</span>
+            </a>
+          </li>
+          <li class="nav-item ">
+            <a href="/deltidlist" class="nav-link">
+              <span class="sidebar-icon"><span class="fas fa-trash-alt"></span></span>
+              <span class="sidebar-text">Delete Questions</span>
+            </a>
+          </li>
+          <li class="nav-item ">
+            <a href="/{{session.email}}/disptests" class="nav-link">
+              <span class="sidebar-icon"><span class="fas fa-history"></span></span>
+              <span class="sidebar-text">Exam History</span>
+            </a>
+          </li>
+          <li class="nav-item ">
+            <a href="/livemonitoringtid" class="nav-link">
+              <span class="sidebar-icon"><span class="fas fa-video"></span></span>
+              <span class="sidebar-text">Live Monitoring</span>
+            </a>
+          </li> 
+          <li class="nav-item ">
+            <a href="/viewstudentslogs" class="nav-link">
+              <span class="sidebar-icon"><span class="fas fa-binoculars"></span></span>
+              <span class="sidebar-text">Student Monitoring</span>
+            </a>
+          </li>          
+          <li class="nav-item ">
+            <a href="/insertmarkstid" class="nav-link">
+              <span class="sidebar-icon"><span class="fas fa-spell-check"></span></span>
+              <span class="sidebar-text">Insert Marks</span>
+            </a>
+          </li>  
+          <li class="nav-item">
+            <a href="/publish-results-testid" class="nav-link">
+              <span class="sidebar-icon"><span class="fas fa-clipboard-check"></span></span>
+              <span class="sidebar-text">Publish Results</span>
+            </a>
+          </li> 
+          <li class="nav-item">
+            <a href="/{{session.email}}/tests-created" class="nav-link">
+              <span class="sidebar-icon"><span class="fas fa-poll"></span></span>
+              <span class="sidebar-text">Results</span>
+            </a>
+          </li>  
+          <li role="separator" class="dropdown-divider mt-4 mb-3" style="border-top: 1px solid var(--dark-border);"></li>
+          <li class="nav-item ">
+            <a href="/report_professor" class="nav-link">
+              <span class="sidebar-icon"><span class="fas fa-bug"></span></span>
+              <span class="sidebar-text">Report Problems</span>
+            </a>
+          </li>
+          <li class="nav-item ">
+            <a href="/payment" class="nav-link">
+              <span class="sidebar-icon"><span class="fas fa-money-bill-alt"></span></span>
+              <span class="sidebar-text">Payment</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="/changepassword_professor" class="nav-link d-flex align-items-center">
+              <span class="sidebar-icon"><span class="fas fa-key"></span></span>
+              <span class="sidebar-text">Change Password</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href ="#" onclick="return funLogout()"
+              class="btn btn-outline-light d-flex align-items-center justify-content-center" style="background-color: var(--dark-accent); color: white; margin-top: 10px;">
+              <span class="sidebar-icon"><span class="fas fa-sign-out-alt"></span></span> <span>Logout</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    
+    <main class="content">
+      <nav class="navbar navbar-top navbar-expand navbar-dashboard navbar-dark ps-0 pe-2 pb-0" style="background-color: var(--dark-bg-secondary); border-bottom: 1px solid var(--dark-border);">
+        <div class="container-fluid px-0">
+          <div class="d-flex justify-content-between w-100" id="navbarSupportedContent">
+            <div class="col-12">
+              {% include 'includes/_messages.html' %}
+              {% block body %}{% endblock %}
+            </div>
+          </div>
+        </div>
+      </nav>
+      
+      <footer id="sticky-footer" class="py-4 mt-5">
+        <div class="d-flex text-center justify-content-center align-items-center" role="contentinfo">
+          <p class="font-weight-bold font-medium mb-0" style="color: var(--dark-text-secondary);">Copyright © MyProctor.ai
+            <span class="current-year" style="color: var(--dark-text-secondary);"><script>document.write(new Date().getFullYear())</script></span>. All rights reserved.
+          </p>
+        </div>
+        <div class="d-flex text-center justify-content-center align-items-center mt-3" role="contentinfo">
+          <p class="font-weight-bold font-small mb-0" style="color: var(--dark-text-secondary);"><span><a style="color: var(--dark-accent); text-decoration: none;">Made with &#128151; By JAGADISH NALAMALAPU</a></span></p>
+        </div>
+      </footer>
+    </main>
+ <script>
+function funLogout () {
+
+Swal.fire({
+  title: 'Are you sure?',
+  text: "Do you really want to logout?",
+  icon: 'warning',
+  showCancelButton: true,
+  confirmButtonText: 'Yes, Logout me!',
+  cancelButtonText: 'No!',
+  confirmButtonColor: '#d33',
+  cancelButtonColor: '#202124',
+  reverseButtons: true
+}).then((result) => {
+  if (result.isConfirmed) {
+              $.ajax({
+                    type: "POST",
+                    url: "/logout",
+                    success: function(response){
+                      if(response=="success"){
+                        console.log(response);
+                        Swal.fire(
+                          'Logged Out!',
+                          'You have been successfully logged out.',
+                          'success'
+                        ).then(() => {
+                          window.location.href = "/";
+                        });
+                      } else {
+                        Swal.fire(
+                          'Error!',
+                          'There was an issue logging out.',
+                          'error'
+                        );
+                      }
+                    },
+                    error: function(xhr, status, error) {
+                      console.error('Logout error:', error);
+                      Swal.fire(
+                        'Error!',
+                        'There was an issue logging out.',
+                        'error'
+                      );
+                      window.location.href = "/";
+                    }
+                });  
+  } else if (result.dismiss === Swal.DismissReason.cancel) {
+    Swal.fire(
+      'Cancelled',
+      'Logout cancelled.',
+      'info'
+    )
+  }
+})
+}
+
+</script> 
+
+ <!-- Core -->
+ <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+ <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+ 
+ <!-- Vendor JS -->
+ <script src="{{ url_for('static', filename='volt/vendor/onscreen/dist/on-screen.umd.min.js') }}"></script>
+ 
+ <!-- Slider -->
+ <script src="{{ url_for('static', filename='volt/vendor/nouislider/distribute/nouislider.min.js') }}"></script>
+ 
+ <!-- Smooth scroll -->
+ <script src="{{ url_for('static', filename='volt/vendor/smooth-scroll/dist/smooth-scroll.polyfills.min.js') }}"></script>
+ 
+ <!-- Datepicker -->
+ <script src="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1/dist/datepicker.min.js"></script>
+ 
+ <!-- Sweet Alerts 2 -->
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.7.3/sweetalert2.all.min.js"></script>
+ 
+ <!-- Moment JS -->
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+ 
+ <!-- Notyf -->
+ <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
+ 
+ <!-- Simplebar -->
+ <script src="https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.min.js"></script>
+ 
+ <!-- Volt JS -->
+ <script src="{{ url_for('static', filename='volt/assets/js/volt.js') }}"></script>
+
+</body>
+</html>
