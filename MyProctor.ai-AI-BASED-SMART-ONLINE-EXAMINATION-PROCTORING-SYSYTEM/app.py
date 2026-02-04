@@ -530,14 +530,17 @@ def changePassword():
 
 @app.route('/logout', methods=["GET", "POST"])
 def logout():
-	cur = mysql.connection.cursor()
-	lbr = cur.execute('UPDATE users set user_login = 0 where email = %s and uid = %s',(session['email'],session['uid']))
-	mysql.connection.commit()
-	if lbr > 0:
-		session.clear()
-		return "success"
-	else:
-		return "error"
+	try:
+		if 'email' in session and 'uid' in session:
+			cur = mysql.connection.cursor()
+			cur.execute('UPDATE users set user_login = 0 where email = %s and uid = %s',(session['email'],session['uid']))
+			mysql.connection.commit()
+			cur.close()
+	except Exception as e:
+		print(f"Logout DB update failed: {e}")
+
+	session.clear()
+	return "success"
 
 def examcreditscheck():
 	cur = mysql.connection.cursor()

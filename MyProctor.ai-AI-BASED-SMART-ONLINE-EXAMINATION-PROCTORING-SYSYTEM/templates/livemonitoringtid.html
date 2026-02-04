@@ -1,42 +1,162 @@
 {% extends 'professor_dashboard.html' %}
 {% block body %}
-<div class="row align-items-center d-flex  justify-content-center">
-    <div class="col-12 mb-4">
-        <div class="card border-light shadow-sm components-section align-items-center d-flex  justify-content-center">
-            <div class="card-body align-items-center d-flex justify-content-center">     
-                <div class="row mb-4">
-                    {% if(cresults is not none and cresults) %}
-                    <div class="col-lg-12 col-sm-16">
-                      <h3 class="h3 text-center">VIEW LIVE OF STUDENTS </h3>  
-                    </div>
-                    <div class="card-body">
-							    <form action="/live_monitoring" method="POST" class="mt-4">
-                                    <div class="form-group text-center">
-                                        <div class="form-group">
-                                            <label class="my-1 mr-2" for="livebox">Choose Exam ID:</label>
-                                            <select class="custom-select my-1 mr-sm-2" id="livebox" name="choosetid" required>
-                                                {% for test in cresults %}
-                                                <option value={{test}}>{{test}}</option>
-                                                {% endfor %}
-                                            </select>
-                                        </div>
-                                    <input type="submit" class="btn btn-block btn-primary" value="VIEW LIVE MONITORING OF EXAM"/>
-                                </form>
-                    </div>
-                    {% else %}
-                    <div class="col-lg-12 col-sm-16">
-                        <h3 class="h3 text-center">
-                            No Records Found!
-                            <br>
-                            Or
-                            <br>
-                            Note: Only Live Exam ID's are shown between duration of the Exam.
-                        </h3>  
-                      </div>
-                    {% endif %}
-                            </div>
-                        </div>
-                    </div>
+
+<style>
+/* ================= MAIN WRAPPER ================= */
+.live-wrapper {
+  background: radial-gradient(circle at top, #0b1220 0%, #020617 70%);
+  border-radius: 20px;
+  padding: 3rem 2.5rem;
+  box-shadow: 
+    0 0 0 1px rgba(99,102,241,0.25),
+    0 40px 90px rgba(0,0,0,0.8);
+  max-width: 750px;
+  margin: 3rem auto;
+  text-align: center;
+}
+
+/* ================= HEADER ================= */
+.live-title {
+  color: #ffffff;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  margin-bottom: 2rem;
+  font-size: 1.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.live-title span {
+  background: rgba(99,102,241,0.2);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  box-shadow: 0 0 15px rgba(99,102,241,0.4);
+}
+
+/* ================= FORM ELEMENTS ================= */
+.live-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  text-align: left;
+}
+
+.live-form label {
+  color: #c7d2fe;
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-left: 0.2rem;
+}
+
+.custom-select {
+  background: #0f172a;
+  border: 1px solid rgba(148,163,184,0.2);
+  color: #ffffff;
+  padding: 0.9rem 1.2rem;
+  border-radius: 12px;
+  font-size: 1rem;
+  width: 100%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1.2rem center;
+  background-size: 12px;
+}
+
+.custom-select:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.25);
+  background-color: #1e293b;
+}
+
+/* ================= BUTTON ================= */
+.live-btn {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: #ffffff;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 1.1rem;
+  border-radius: 12px;
+  width: 100%;
+  margin-top: 1rem;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.live-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px -5px rgba(79, 70, 229, 0.6); 
+  background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+}
+
+/* ================= EMPTY STATE ================= */
+.no-data {
+  text-align: center;
+  padding: 3rem;
+  color: #94a3b8;
+}
+
+.no-data strong {
+  color: #f1f5f9;
+  font-size: 1.2rem;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+</style>
+
+<div class="container-fluid mt-5 mb-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-12">
+
+        <div class="live-wrapper">
+
+            {% if cresults is not none and cresults %}
+
+            <h3 class="live-title">
+                <span>👁️</span> SELECT ACTIVE EXAM
+            </h3>
+
+            <form action="/live_monitoring" method="POST" class="live-form">
+                <div>
+                    <label for="livebox">Choose Exam ID</label>
+                    <select id="livebox" name="choosetid" class="custom-select" required>
+                        {% for test in cresults %}
+                        <option value="{{ test }}">{{ test }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
+
+                <button type="submit" class="live-btn">
+                    Start Monitoring
+                </button>
+            </form>
+
+            {% else %}
+
+            <div class="no-data">
+                <strong>No Live Exams Found</strong>
+                <p>Only exams that are currently in progress will appear here.</p>
             </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+</div>
+
 {% endblock %}

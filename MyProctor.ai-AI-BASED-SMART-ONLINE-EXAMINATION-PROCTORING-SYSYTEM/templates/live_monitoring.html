@@ -1,39 +1,315 @@
 {% extends 'professor_dashboard.html' %}
 {% block body %}
-<div class="row align-items-center d-flex  justify-content-center">
-    <div class="col-12 mb-4">
-        <div class="card border-light shadow-sm components-section align-items-center d-flex  justify-content-center">
-            <div class="card-body align-items-center d-flex justify-content-center">     
-                <div class="row mb-4">
-                    {% if(testid) %}
-                    <div class="col-lg-12 col-sm-16">
-                      <h3 class="h3 text-center">LIVE MONITORING of EXAM-ID: {{testid}} </h3>  
-                    </div>
-                    <div class="card-body">
-                        <div class="form-group">
-                            <div class="container">
-                              <div class="justify-content-center align-items-center">
-                                <div id="otEmbedContainer"  id ="livecheck" style="width:650px; height:1000px;">
-                                <script src="https://tokbox.com/embed/embed/ot-embed.js?embedId=2020dbd9-0a89-472d-a60b-ca12ddfd48bc&room={{testid}}"></script>
-                              </div>
-                              </div>
-                            </div>
-                    </div>
-                    </div>
-                    {% else %}
-                    <div class="col-lg-12 col-sm-16">
-                        <h3 class="h3 text-center">
-                            No Records Found!
-                            <br>
-                            Or
-                            <br>
-                            Note: Only Live Exam ID's are shown between duration of the Exam.
-                        </h3>  
-                      </div>
-                    {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
+
+<style>
+/* ================= CORE WRAPPER ================= */
+.live-wrapper {
+  background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+  border-radius: 24px;
+  padding: 0;
+  box-shadow: 
+    0 0 0 1px rgba(148,163,184,0.1),
+    0 50px 100px -20px rgba(0,0,0,0.9);
+  overflow: hidden;
+  position: relative;
+  min-height: 85vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ================= GLASS HEADER ================= */
+.live-header {
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 20;
+}
+
+.live-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.live-brand h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.live-badge {
+  background: rgba(99,102,241,0.15);
+  color: #818cf8;
+  border: 1px solid rgba(99,102,241,0.3);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+/* ================= CONTROLS / INFO ================= */
+.live-controls {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.live-time {
+  font-family: 'Courier New', Courier, monospace;
+  color: #cbd5e1;
+  font-size: 1rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.live-time i {
+  color: #6366f1;
+}
+
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(16, 185, 129, 0.1);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  padding: 6px 14px;
+  border-radius: 30px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  background: #34d399;
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(52, 211, 153, 0.6);
+}
+
+/* ================= VIDEO CONTAINER ================= */
+.live-content {
+  flex: 1;
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.video-frame {
+  width: 100%;
+  max-width: 1200px;
+  height: 75vh;
+  border: 1px solid rgba(99,102,241,0.3);
+  background: #000;
+  position: relative;
+  box-shadow: 0 0 40px rgba(0,0,0,0.5);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+/* CORNER ACCENTS */
+.corner {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-color: #6366f1;
+  border-style: solid;
+  pointer-events: none;
+  z-index: 10;
+}
+.tl { top: 0; left: 0; border-width: 3px 0 0 3px; }
+.tr { top: 0; right: 0; border-width: 3px 3px 0 0; }
+.bl { bottom: 0; left: 0; border-width: 0 0 3px 3px; }
+.br { bottom: 0; right: 0; border-width: 0 3px 3px 0; }
+
+/* SCAN LINE ANIMATION */
+.scan-line {
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  background: rgba(99,102,241,0.8);
+  box-shadow: 0 0 15px rgba(99,102,241,0.8);
+  top: 0;
+  left: 0;
+  z-index: 5;
+  animation: scan 4s linear infinite;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+@keyframes scan {
+  0% { top: 0%; opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+
+/* REC INDICATOR */
+.rec-indicator {
+  position: absolute;
+  top: 20px;
+  right: 25px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(0,0,0,0.6);
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: 1px solid rgba(239,68,68,0.3);
+  z-index: 15;
+}
+
+.rec-text {
+  color: #ef4444;
+  font-weight: 800;
+  font-size: 0.9rem;
+  letter-spacing: 2px;
+}
+
+.rec-dot-anim {
+  width: 10px;
+  height: 10px;
+  background: #ef4444;
+  border-radius: 50%;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+/* OPENTOK CONTAINER */
+#otEmbedContainer {
+  width: 100%;
+  height: 100%;
+  background: #000;
+}
+
+/* ================= EMPTY STATE ================= */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  color: #94a3b8;
+}
+
+.empty-state h4 {
+  color: #f8fafc;
+  margin-top: 1.5rem;
+  font-weight: 700;
+}
+</style>
+
+<div class="container-fluid mt-4 mb-4" style="padding: 0 2rem;">
+  <div class="row justify-content-center">
+    <div class="col-12">
+
+      <div class="live-wrapper">
+
+        {% if testid %}
+
+        <!-- GLASS HEADER -->
+        <header class="live-header">
+          <div class="live-brand">
+            <i class="fas fa-satellite-dish fa-lg text-primary"></i>
+            <h3>Live Monitor</h3>
+            <span class="live-badge">{{ testid }}</span>
+          </div>
+
+          <div class="live-controls">
+            <!-- REAL TIME CLOCK -->
+            <div class="live-time">
+              <i class="far fa-clock"></i>
+              <span id="systemClock">--:--:--</span>
             </div>
+
+            <div class="status-badge">
+              <span class="status-dot"></span>
+              System Active
+            </div>
+          </div>
+        </header>
+
+        <!-- MAIN MONITOR CONTENT -->
+        <div class="live-content">
+          <div class="video-frame">
+            <!-- DECORATIVE CORNERS -->
+            <div class="corner tl"></div>
+            <div class="corner tr"></div>
+            <div class="corner bl"></div>
+            <div class="corner br"></div>
+
+            <!-- SCAN LINE -->
+            <div class="scan-line"></div>
+
+            <!-- REC INDICATOR -->
+            <div class="rec-indicator">
+              <div class="rec-dot-anim"></div>
+              <span class="rec-text">REC</span>
+            </div>
+
+            <!-- VIDEO EMBED -->
+            <div id="otEmbedContainer"></div>
+          </div>
+        </div>
+
+        <script src="https://tokbox.com/embed/embed/ot-embed.js?embedId=2020dbd9-0a89-472d-a60b-ca12ddfd48bc&room={{ testid }}"></script>
+        
+        <script>
+          // Simple Clock
+          function updateClock() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString([], { hour12: false });
+            document.getElementById('systemClock').innerText = timeString;
+          }
+          setInterval(updateClock, 1000);
+          updateClock();
+        </script>
+
+        {% else %}
+
+        <!-- EMPTY STATE -->
+        <div class="live-content">
+          <div class="empty-state">
+            <lottie-player
+              src="https://assets7.lottiefiles.com/datafiles/vhvOcuUkH41HdrL/data.json"
+              background="transparent"
+              speed="1"
+              style="width:300px;height:300px; opacity: 0.8;"
+              loop autoplay>
+            </lottie-player>
+            <h4>Signal Lost</h4>
+            <p>No active exam stream detected. Please return to dashboard.</p>
+          </div>
+        </div>
+
+        {% endif %}
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
 {% endblock %}

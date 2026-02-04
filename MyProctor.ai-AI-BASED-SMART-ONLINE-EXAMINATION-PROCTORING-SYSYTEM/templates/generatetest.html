@@ -1,38 +1,220 @@
 {% extends 'professor_dashboard.html' %}
 {% block body %}
-<div class="row align-items-center d-flex  justify-content-center">
-    <div class="col-12 mb-4">
-        <div class="card border-light shadow-sm components-section align-items-center d-flex  justify-content-center">
-            <div class="card-body align-items-center d-flex justify-content-center">     
-                <div class="row mb-4">
-                    <div class="col-lg-12 col-sm-16">
-                      <h3 class="h3 text-center">GENERATE QUESTIONS & ANSWERS</h3>  
-                    </div>
-<center><lottie-player src="https://assets3.lottiefiles.com/packages/lf20_6CrYF1.json"  background="transparent"  speed="1"  style="width: 400px; height: 300px;"  loop  autoplay></lottie-player></center>
-                    <div class="card-body">
-                              <form method="POST" action="test_generate">
-                                <div class="mb-4">
-                                  <div class="form-group">
-                                      <label class="h6" for="exampleFormControlTextarea1">Input Text</label>
-                                        <textarea name="itext" class="form-control" placeholder="Input Text?" rows="6" required></textarea>
-                                    </div>    
-                                    <div class="form-group">
-                                        <label class="my-1 mr-2" for="inlineFormCustomSelectPref">Choose Question Type</label>
-                                        <select class="custom-select my-1 mr-sm-2" id="inlineFormCustomSelectPref" name="test_type" required>
-                                            <option value="objective">Objective</option>
-                                            <option value="subjective">Subjective</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                      <label class="h6" for="exampleFormControlTextarea1">No of Questions</label>
-                                        <input type="number" name="noq" class="form-control" placeholder="No. of Questions" min="1" required>
-                                    </div>  
-    <input type="submit" class="btn btn-primary" value="Generate">
-  </form>
+
+<div class="row align-items-center d-flex justify-content-center">
+  <div class="col-12 mb-4">
+
+    <div class="card border-light shadow-sm components-section align-items-center d-flex justify-content-center">
+      <div class="card-body align-items-center d-flex justify-content-center">
+
+        <div class="row mb-4">
+          <div class="col-lg-12 col-sm-16">
+            <h3 class="h3 text-center">GENERATE QUESTIONS & ANSWERS</h3>
+          </div>
+
+          <center>
+            <lottie-player
+              src="https://assets3.lottiefiles.com/packages/lf20_6CrYF1.json"
+              background="transparent"
+              speed="1"
+              style="width: 400px; height: 300px;"
+              loop
+              autoplay>
+            </lottie-player>
+          </center>
+
+          <div class="card-body">
+
+            <form method="POST" action="test_generate">
+
+              <div class="form-group">
+                <label class="h6">Input Text</label>
+                <textarea name="itext" class="form-control" rows="6" required></textarea>
+              </div>
+
+              <div class="form-group">
+                <label class="h6">Choose Question Type</label>
+                <select class="custom-select" name="test_type" required>
+                  <option value="objective">Objective</option>
+                  <option value="subjective">Subjective</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="h6">No of Questions</label>
+                <input type="number" name="noq" class="form-control" min="1" required>
+              </div>
+
+              <div class="text-center">
+                <input type="submit" class="btn btn-primary mt-2" value="Generate">
+              </div>
+
+            </form> 
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
   </div>
 </div>
-</div>
-</div>
-    </div>
-</div>
+
+<!-- ================== STYLES (LIGHT + DARK MODE) ================== -->
+<style>
+
+/* ========== LIGHT MODE (DEFAULT) ========== */
+
+.components-section {
+  max-width: 900px;
+  padding: 2.5rem;
+  margin: auto;
+}
+
+.card {
+  border-radius: 6px;
+  background-color: #ffffff;
+}
+
+.card-body {
+  width: 100%;
+  padding: 2rem 2.5rem;
+}
+
+h3.h3 {
+  font-weight: 600;
+  color: #212529;
+  margin-bottom: 1.5rem;
+  letter-spacing: 0.4px;
+}
+
+lottie-player {
+  opacity: 0.9;
+  margin-bottom: 2rem;
+}
+
+/* Form layout */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+/* Labels */
+.form-group label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #6c757d;
+  margin-bottom: 0.35rem;
+}
+
+/* Inputs */
+.form-control,
+.custom-select {
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #212529;
+  padding: 0.6rem 0.75rem;
+}
+
+.form-control:focus,
+.custom-select:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.15rem rgba(13, 110, 253, 0.15);
+  background-color: #ffffff;
+}
+
+/* Textarea */
+textarea.form-control {
+  resize: vertical;
+  min-height: 140px;
+  line-height: 1.5;
+}
+
+/* Button */
+.btn-primary {
+  padding: 0.55rem 1.75rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  border-radius: 4px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .card-body {
+    padding: 1.5rem;
+  }
+
+  lottie-player {
+    width: 100% !important;
+    height: auto !important;
+  }
+}
+
+/* ========== DARK MODE ========== */
+@media (prefers-color-scheme: dark) {
+
+  body {
+    background-color: #0f172a;
+    color: #e5e7eb;
+  }
+
+  .card {
+    background-color: #111827;
+    border-color: #1f2937;
+  }
+
+  .card-body {
+    background-color: #111827;
+  }
+
+  h3.h3 {
+    color: #f9fafb;
+  }
+
+  .form-group label {
+    color: #9ca3af;
+  }
+
+  .form-control,
+  .custom-select {
+    background-color: #020617;
+    border-color: #1f2937;
+    color: #f9fafb;
+  }
+
+  .form-control::placeholder {
+    color: #6b7280;
+  }
+
+  .form-control:focus,
+  .custom-select:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 0.15rem rgba(59, 130, 246, 0.35);
+    background-color: #020617;
+    color: #f9fafb;
+  }
+
+  .btn-primary {
+    background-color: #2563eb;
+    border-color: #2563eb;
+  }
+
+  .btn-primary:hover {
+    background-color: #1d4ed8;
+    border-color: #1d4ed8;
+  }
+
+  lottie-player {
+    opacity: 0.85;
+    filter: brightness(0.9);
+  }
+}
+
+</style>
+
 {% endblock %}

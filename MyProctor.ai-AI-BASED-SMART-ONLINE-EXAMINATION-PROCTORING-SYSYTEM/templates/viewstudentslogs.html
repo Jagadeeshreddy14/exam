@@ -1,40 +1,180 @@
 {% extends 'professor_dashboard.html' %}
 {% block body %}
-<div class="row align-items-center d-flex  justify-content-center">
-    <div class="col-12 mb-4">
-        <div class="card border-light shadow-sm components-section align-items-center d-flex  justify-content-center">
-            <div class="card-body align-items-center d-flex justify-content-center">     
-                <div class="row mb-4">
-                    {% if cresults is not none %}
-                    <div class="col-lg-12 col-sm-16">
-                      <h3 class="h3 text-center">VIEW STUDENT LOGS</h3>  
-                    </div>
-<center><lottie-player src="https://assets3.lottiefiles.com/packages/lf20_45rapv.json"  background="transparent"  speed="1"  style="width: 250px; height: 250px;"  loop  autoplay></lottie-player></center>
-                    <div class="card-body">
-							    <form action="displaystudentsdetails" method="POST" class="mt-4">
-                                    <div class="form-group text-center">
-                                        <div class="form-group">
-                                            <label class="my-1 mr-2" for="livebox">Choose Exam ID:</label>
-                                            <select class="custom-select my-1 mr-sm-2" id="livebox" name="choosetid" required>
-                                                {% for test in cresults %}
-                                                <option value={{test['test_id']}}>{{test['test_id']}}</option>
-                                                {% endfor %}
-                                            </select>
-                                        </div>
-                                    <input type="submit" class="btn btn-block btn-primary" value="VIEW STUDENT LOGS"/>
-                                </form>
-                                </div>
-                            </div>
-                            {% else %}
-                            <div class="col-lg-12 col-sm-16">
-                                <center><lottie-player src="https://assets7.lottiefiles.com/datafiles/vhvOcuUkH41HdrL/data.json"  background="transparent"  speed="1"  style="width: 300px; height: 300px;"  loop  autoplay></lottie-player></center>
-                                <h3 class="h3 text-center">
-                                    No Records Found!
-                                </h3>  
-                              </div>
-                            {% endif %}
-                        </div>
+
+<style>
+/* ================= MAIN WRAPPER ================= */
+.logs-wrapper {
+  background: radial-gradient(circle at top, #0b1220 0%, #020617 70%);
+  border-radius: 20px;
+  padding: 3rem 2.5rem;
+  box-shadow: 
+    0 0 0 1px rgba(99,102,241,0.25),
+    0 40px 90px rgba(0,0,0,0.8);
+  max-width: 700px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+/* ================= HEADER ================= */
+.logs-header h3 {
+  color: #ffffff;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.5rem;
+  font-size: 1.8rem;
+}
+
+.logs-header p {
+  color: #94a3b8;
+  font-size: 0.95rem;
+}
+
+/* ================= IMAGE/ANIMATION ================= */
+lottie-player {
+  filter: drop-shadow(0 0 30px rgba(99,102,241,0.2));
+  margin: 1.5rem auto 2rem;
+}
+
+/* ================= FORM ELEMENTS ================= */
+.form-group label {
+  display: block;
+  text-align: left;
+  color: #c7d2fe;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  margin-left: 0.2rem;
+}
+
+.custom-select {
+  background: #0f172a;
+  border: 1px solid rgba(148,163,184,0.2);
+  color: #ffffff;
+  padding: 0.8rem 1rem;
+  border-radius: 12px;
+  font-size: 1rem;
+  width: 100%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.custom-select:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.25);
+  background: #1e293b;
+}
+
+/* ================= BUTTON ================= */
+.logs-btn {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: #ffffff;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 1rem;
+  border-radius: 12px;
+  width: 100%;
+  margin-top: 1.5rem;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+}
+
+.logs-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.5); 
+  background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+}
+
+/* ================= EMPTY STATE ================= */
+.empty-state {
+  padding: 2rem;
+}
+
+.empty-state h3 {
+  color: #e2e8f0;
+  font-weight: 700;
+  margin-top: 1rem;
+}
+
+.empty-state p {
+  color: #64748b;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 640px) {
+  .logs-wrapper {
+    padding: 2rem 1.5rem;
+  }
+}
+</style>
+
+<div class="container-fluid mt-5 mb-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-12">
+
+      <div class="logs-wrapper">
+
+        {% if cresults is not none %}
+
+        <!-- HEADER -->
+        <div class="logs-header">
+          <h3>Student Activity Logs</h3>
+          <p>Select an exam ID below to inspect proctoring logs</p>
         </div>
+
+        <!-- ANIMATION (No Background) -->
+        <lottie-player
+          src="https://assets3.lottiefiles.com/packages/lf20_45rapv.json"
+          background="transparent"
+          speed="1"
+          style="width: 240px; height: 240px;"
+          loop autoplay>
+        </lottie-player>
+
+        <!-- FORM -->
+        <form action="displaystudentsdetails" method="POST">
+            <div class="form-group">
+              <label for="livebox">Choose Exam ID</label>
+              <select class="custom-select" id="livebox" name="choosetid" required>
+                {% for test in cresults %}
+                <option value="{{ test['test_id'] }}">
+                  {{ test['test_id'] }}
+                </option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <input
+              type="submit"
+              class="btn logs-btn"
+              value="View Logs"
+            />
+        </form>
+
+        {% else %}
+
+        <!-- EMPTY STATE -->
+        <div class="empty-state">
+          <lottie-player
+            src="https://assets7.lottiefiles.com/datafiles/vhvOcuUkH41HdrL/data.json"
+            background="transparent"
+            speed="1"
+            style="width:250px;height:250px; margin: 0 auto;"
+            loop autoplay>
+          </lottie-player>
+
+          <h3>No Logs Available</h3>
+          <p>Activity logs will appear here once exams have started.</p>
+        </div>
+
+        {% endif %}
+
+      </div>
+
     </div>
+  </div>
 </div>
+
 {% endblock %}

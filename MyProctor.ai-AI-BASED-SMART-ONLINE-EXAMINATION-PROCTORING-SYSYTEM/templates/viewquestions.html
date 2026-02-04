@@ -1,37 +1,136 @@
 {% extends 'professor_dashboard.html' %}
 {% block body %}
-<div class="row align-items-center d-flex  justify-content-center">
-    <div class="col-12 mb-4">
-        <div class="card border-light shadow-sm components-section align-items-center d-flex  justify-content-center">
-            <div class="card-body align-items-center d-flex justify-content-center">     
-                <div class="row mb-4">
-                    {% if cresults is not none %}
-                    <div class="col-lg-12 col-sm-16">
-                      <h3 class="h3 text-center">VIEW QUESTIONS</h3>  
-                    </div>
-                    <form action="displayquestions" method="POST" class="mt-4">
-                        <div class="form-group">
-                            <label class="my-1 mr-2" for="livebox">Choose Exam ID:</label>
-                            <div class="input-group mb-4">
-                                <select class="custom-select my-1 mr-sm-2"  name="choosetid" required>
-                                {% for test in cresults %}
-                                <option value={{test['test_id']}}>{{test['test_id']}}</option>
-                                {% endfor %}
-                                </select>
-                                </div>
-                            <input type="submit" class="btn btn-block btn-primary" value="VIEW QUESTIONS"/>
-                            </div>
-                            {% else %}        
-                            <div class="col-lg-12 col-sm-16">
-                                <center><lottie-player src="https://assets7.lottiefiles.com/datafiles/vhvOcuUkH41HdrL/data.json"  background="transparent"  speed="1"  style="width: 300px; height: 300px;"  loop  autoplay></lottie-player></center>
-                                <h3 class="h3 text-center">
-                                    No Records Found!
-                                </h3>                              
-                              </div>
-                            {% endif %}
-                            </div>
-                </div>
-                            </div>
-        </div>
-    </div>    
+
+<style>
+/* ===== PAGE CENTERING ===== */
+.view-wrapper {
+    min-height: calc(100vh - 120px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ===== MAIN CARD ===== */
+.exam-card {
+    width: 100%;
+    max-width: 760px;
+    padding: 3rem 3.5rem;
+    background: radial-gradient(
+        circle at top,
+        #0b1220 0%,
+        #020617 70%
+    );
+    border-radius: 18px;
+    border: 1px solid rgba(255,255,255,0.12);
+    box-shadow:
+        0 0 0 1px rgba(99,102,241,0.35),
+        0 30px 80px rgba(0,0,0,0.7);
+    text-align: center;
+}
+
+/* ===== TITLE ===== */
+.exam-card h2 {
+    color: #ffffff;
+    font-weight: 800;
+    letter-spacing: 1px;
+    margin-bottom: 2.2rem;
+}
+
+/* ===== FORM GROUP ===== */
+.form-group {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.2rem;
+    margin-bottom: 2.5rem;
+}
+
+.form-group label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #c7d2fe;
+    margin-bottom: 0;
+}
+
+/* ===== SELECT ===== */
+.custom-select {
+    min-width: 260px;
+    background: #020617;
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #ffffff;
+    padding: 0.65rem 0.85rem;
+    border-radius: 10px;
+    font-weight: 500;
+}
+
+.custom-select:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.35);
+}
+
+/* ===== PRIMARY BUTTON ===== */
+.enter-btn {
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    border: none;
+    padding: 0.85rem 2.8rem;
+    border-radius: 14px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    color: #ffffff;
+    font-size: 0.95rem;
+    transition: all 0.25s ease;
+}
+
+.enter-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 35px rgba(99,102,241,0.45);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 640px) {
+    .exam-card {
+        padding: 2rem 1.5rem;
+    }
+
+    .form-group {
+        flex-direction: column;
+        gap: 0.6rem;
+    }
+
+    .custom-select {
+        width: 100%;
+    }
+}
+</style>
+
+<div class="view-wrapper">
+    <div class="exam-card">
+
+        <h2>VIEW QUESTIONS</h2>
+
+        {% if cresults is not none %}
+        <form action="displayquestions" method="POST">
+            <div class="form-group">
+                <label>Choose Exam ID</label>
+                <select class="custom-select" name="choosetid" required>
+                    {% for test in cresults %}
+                    <option value="{{ test['test_id'] }}">
+                        {{ test['test_id'] }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit" class="enter-btn">
+                ENTER EXAM
+            </button>
+        </form>
+        {% else %}
+            <h4 style="color:#9ca3af;">No Records Found</h4>
+        {% endif %}
+
+    </div>
+</div>
+
 {% endblock %}

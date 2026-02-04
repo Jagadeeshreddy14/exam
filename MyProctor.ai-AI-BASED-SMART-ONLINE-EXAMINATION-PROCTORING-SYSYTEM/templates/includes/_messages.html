@@ -1,36 +1,98 @@
-<br><br><br>
-<div class="alert" id="msg">{{msg}}</div>
-{% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-    {% for category, message in messages %}
-	  <div class="row justify-content-center">
-            <div class="col-12 col-md-10">
-                <div class="alert alert-info shadow-soft" role="alert">
-                    {{ message }}
-                </div>
-            </div>
+{% set flashed = get_flashed_messages(with_categories=true) %}
+
+{% if flashed %}
+<div class="row justify-content-center mt-4 pt-3">
+  <div class="col-12 col-md-10">
+    {% for raw_category, message in flashed %}
+
+      {# Normalize categories safely #}
+      {% set bs_category =
+          'danger' if raw_category in ['error', 'danger'] else
+          'info'   if raw_category in ['message', 'info'] else
+          'success' if raw_category == 'success' else
+          'warning' if raw_category == 'warning' else
+          'secondary'
+      %}
+
+      {# Define RGB values for glass effect #}
+      {% set rgb_colors = {
+          'danger': '220, 53, 69',
+          'info': '13, 202, 240',
+          'success': '25, 135, 84',
+          'warning': '255, 193, 7',
+          'secondary': '108, 117, 125'
+      } %}
+      {% set bg_rgb = rgb_colors[bs_category] if bs_category in rgb_colors else '108, 117, 125' %}
+
+      <div
+        class="alert alert-{{ bs_category }} alert-dismissible fade show shadow-md glass-card border-0 text-white"
+        role="alert"
+        style="background-color: rgba({{ bg_rgb }}, 0.8);"
+      >
+        <div class="d-flex align-items-center">
+          <span class="alert-icon me-2 mr-2">
+            {% if bs_category == 'success' %}
+              <i class="fas fa-check-circle fa-lg"></i>
+            {% elif bs_category == 'danger' %}
+              <i class="fas fa-exclamation-circle fa-lg"></i>
+            {% elif bs_category == 'warning' %}
+              <i class="fas fa-exclamation-triangle fa-lg"></i>
+            {% else %}
+              <i class="fas fa-info-circle fa-lg"></i>
+            {% endif %}
+          </span>
+          <span class="fw-bold font-weight-bold">{{ message }}</span>
         </div>
+
+        <button
+          type="button"
+          class="close text-white"
+          data-dismiss="alert"
+          aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
     {% endfor %}
+  </div>
+</div>
+{% elif error or msg %}
+{# Legacy fallback only if no flashed messages exist #}
+<div class="row justify-content-center mt-4 pt-3">
+  <div class="col-12 col-md-10">
 
-  {% endif %}
-{% endwith %}
-
-{% if error %}
-<div class="row justify-content-center">
-            <div class="col-12 col-md-10">
-                <div class="alert alert-danger shadow-soft" role="alert">
-                   {{error}}
-                </div>
-            </div>
+    {% if error %}
+      <div class="alert alert-danger alert-dismissible fade show shadow-md glass-card border-0 text-white"
+           role="alert"
+           style="background-color: rgba(220, 53, 69, 0.8);">
+        <div class="d-flex align-items-center">
+          <span class="alert-icon me-2 mr-2">
+            <i class="fas fa-exclamation-triangle fa-lg"></i>
+          </span>
+          <span class="fw-bold font-weight-bold">{{ error }}</span>
         </div>
-{% endif %}
+        <button type="button" class="close text-white" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    {% endif %}
 
-{% if msg %}
-<div class="row justify-content-center">
-            <div class="col-12 col-md-10">
-                <div class="alert alert-success shadow-soft" role="alert">
-                    {{msg}}
-                </div>
-            </div>
+    {% if msg %}
+      <div class="alert alert-success alert-dismissible fade show shadow-md glass-card border-0 text-white"
+           role="alert"
+           style="background-color: rgba(25, 135, 84, 0.8);">
+        <div class="d-flex align-items-center">
+          <span class="alert-icon me-2 mr-2">
+            <i class="fas fa-check-circle fa-lg"></i>
+          </span>
+          <span class="fw-bold font-weight-bold">{{ msg }}</span>
         </div>
+        <button type="button" class="close text-white" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    {% endif %}
+
+  </div>
+</div>
 {% endif %}

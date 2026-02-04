@@ -1,47 +1,158 @@
 {% extends 'professor_dashboard.html' %}
 {% block body %}
-<div class="row align-items-center d-flex  justify-content-center">
-    <div class="col-12 mb-4">
-        <div class="card border-light shadow-sm components-section align-items-center d-flex  justify-content-center">
-            <div class="card-body align-items-center d-flex justify-content-center">     
-                <div class="row mb-4">
-                    <div class="col-lg-12 col-sm-16">
-                      <h3 class="h3 text-center">DISPLAY QUESTIONS</h3>  
-                    </div>
-                    <div class="card-body justify-content-md-center">
-                        <div class="table-responsive">
-                            <table id="example" class="display nowrap" style="width:100%">
-                                <thead class="thead-light">
-                                    <tr>
-                    <th class="border-0" scope="col" >QID</th>
-                    <th class="border-0" scope="col" >QUESTION</th>
-                    <th class="border-0" scope="col" >MARKS</th>
-                </tr>
-                 <tbody>
-{% for res in callresults%}
-              <tr>
-                    <td>{{res['qid']}}</td>
-                    <td>{{res['q']}}</td>
-                    <td>{{res['marks']}}</td>
-                   </tr>
-{% endfor %}
-                      </tbody>
+
+<style>
+/* ================= PAGE WRAPPER ================= */
+.display-wrapper {
+    min-height: calc(100vh - 120px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ================= MAIN CARD ================= */
+.display-card {
+    width: 100%;
+    max-width: 1100px;
+    padding: 2.8rem 3rem;
+    background: radial-gradient(circle at top, #0b1220 0%, #020617 70%);
+    border-radius: 18px;
+    border: 1px solid rgba(255,255,255,0.12);
+    box-shadow:
+        0 0 0 1px rgba(99,102,241,0.25),
+        0 30px 80px rgba(0,0,0,0.7);
+}
+
+/* ================= TITLE ================= */
+.display-card h3 {
+    text-align: center;
+    color: #ffffff;
+    font-weight: 800;
+    letter-spacing: 1px;
+    margin-bottom: 2rem;
+}
+
+/* ================= DATATABLE ================= */
+table.dataTable {
+    border-collapse: separate !important;
+    border-spacing: 0 10px;
+    background: transparent;
+}
+
+table.dataTable thead th {
+    background: transparent;
+    color: #c7d2fe;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border: none;
+}
+
+/* ================= ROWS ================= */
+table.dataTable tbody tr {
+    background: #020617;
+    color: #e5e7eb;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.45);
+}
+
+table.dataTable tbody td {
+    padding: 0.9rem 1rem;
+    border: none;
+}
+
+table.dataTable tbody tr:hover {
+    background: #020617;
+    transform: scale(1.01);
+    transition: 0.2s ease;
+}
+
+/* ================= BUTTONS ================= */
+.dt-buttons {
+    margin-bottom: 1.5rem;
+}
+
+.dt-button {
+    background: linear-gradient(135deg, #6366f1, #4f46e5) !important;
+    border: none !important;
+    border-radius: 10px !important;
+    color: #ffffff !important;
+    font-weight: 600;
+    padding: 0.45rem 1rem;
+    margin-right: 0.4rem;
+    transition: all 0.2s ease;
+}
+
+.dt-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(99,102,241,0.4);
+}
+
+/* ================= SEARCH ================= */
+.dataTables_filter input {
+    background: #020617;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #ffffff;
+    border-radius: 8px;
+    padding: 0.4rem 0.6rem;
+}
+
+/* ================= PAGINATION ================= */
+.dataTables_paginate .paginate_button {
+    color: #c7d2fe !important;
+}
+
+.dataTables_paginate .paginate_button.current {
+    background: #6366f1 !important;
+    color: #ffffff !important;
+    border-radius: 8px;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+    .display-card {
+        padding: 2rem 1.5rem;
+    }
+}
+</style>
+
+<div class="display-wrapper">
+    <div class="display-card">
+
+        <h3>DISPLAY QUESTIONS</h3>
+
+        <div class="table-responsive">
+            <table id="example" class="display nowrap" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>QID</th>
+                        <th>QUESTION</th>
+                        <th>MARKS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for res in callresults %}
+                    <tr>
+                        <td>{{ res['qid'] }}</td>
+                        <td>{{ res['q'] }}</td>
+                        <td>{{ res['marks'] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
             </table>
         </div>
-    </div>
-                </div>
-            </div>
-        </div>
+
     </div>
 </div>
+
 <script>
-    $(document).ready(function() {
-    $('#example').DataTable( {
+$(document).ready(function () {
+    $('#example').DataTable({
         dom: 'Bfrtip',
-        buttons: [
-            'copy', 'csv', 'excel', 'pdf', 'print'
-        ]
-    } );
-} );
+        buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
+        scrollX: true
+    });
+});
 </script>
+
 {% endblock %}

@@ -1,61 +1,195 @@
 {% extends 'professor_dashboard.html' %}
 {% block body %}
-<div class="row align-items-center d-flex  justify-content-center">
-    <div class="col-12 mb-4">
-        <div class="card border-light shadow-sm components-section align-items-center d-flex  justify-content-center">
-            <div class="card-body align-items-center d-flex justify-content-center">     
-                <div class="row mb-4">
-                    {% if tests is not none and tests %}
-                    <div class="col-lg-12 col-sm-16">
-        <h3 class="h3 text-center">EXAM HISTORY</h3> 
-                    </div> 
-<div class="card-body justify-content-md-center">
-    <center><lottie-player src="https://assets1.lottiefiles.com/packages/lf20_ljr4k6s1.json"  background="transparent"  speed="1"  style="width: 300px; height: 180px;"  loop  autoplay></lottie-player></center>
-        <div class="table-responsive">
-            <table id="example" class="table table-centered table-nowrap mb-0 rounded">
-                <thead class="thead-light">
-                    <tr>
-                                <th class="border-0" scope="col" >Test ID</th>
-                                <th class="border-0" scope="col" >Password</th>
-                                <th class="border-0" scope="col" >Subject</th>
-                                <th class="border-0" scope="col" >Topic</th>
-                                <th class="border-0" scope="col" >Share</th>
-                            </tr>
-							 <tbody>
-            {% for test in tests %}
-                            <tr>
-								<td>{{test['test_id']}}</td>
-                                <td>{{test['password']}}</td>
-								<td>{{test['subject']}}</td>
-								<td>{{test['topic']}}</td>
-                                <td><a class="btn btn-primary" href="/{{session.email}}/{{test['test_id']}}/share_details">Share</a></td>
-                             </tr>
-            {% endfor %}
-                                  </tbody>
-                        </table>
-                    </div>
-                </div>
-</div>
-{% else %}
-<div class="col-lg-12 col-sm-16">
-    <center><lottie-player src="https://assets7.lottiefiles.com/datafiles/vhvOcuUkH41HdrL/data.json"  background="transparent"  speed="1"  style="width: 300px; height: 300px;"  loop  autoplay></lottie-player></center>
-    <h3 class="h3 text-center">
-        No Records Found!
-    </h3>  
-  </div>        
-                      {% endif %}
-            </div>
+
+<style>
+/* ================= DARK THEME CORE ================= */
+.exam-wrapper {
+  background: linear-gradient(135deg, #020617, #020617);
+  border-radius: 18px;
+  padding: 30px;
+  box-shadow: 0 0 60px rgba(99,102,241,0.15);
+}
+
+/* ================= HEADER ================= */
+.exam-title {
+  text-align: center;
+  color: #ffffff;
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin-bottom: 20px;
+}
+
+/* ================= ANIMATION ================= */
+.exam-animation-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.exam-animation-glow {
+  padding: 22px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(99,102,241,0.35),
+    rgba(59,130,246,0.25),
+    rgba(2,6,23,0.95)
+  );
+  box-shadow:
+    0 0 40px rgba(99,102,241,0.35),
+    0 0 90px rgba(59,130,246,0.25);
+}
+
+/* ================= TABLE ================= */
+.dark-table {
+  background: transparent;
+  color: #e5e7eb;
+}
+
+.dark-table thead {
+  background: rgba(15,23,42,0.9);
+}
+
+.dark-table thead th {
+  color: #93c5fd;
+  border-bottom: 1px solid rgba(148,163,184,0.2);
+  text-transform: uppercase;
+  font-size: 13px;
+  letter-spacing: 0.6px;
+}
+
+.dark-table tbody tr {
+  background: rgba(2,6,23,0.6);
+  transition: all 0.25s ease;
+}
+
+.dark-table tbody tr:hover {
+  background: rgba(30,41,59,0.9);
+}
+
+.dark-table td {
+  border-top: 1px solid rgba(148,163,184,0.12);
+}
+
+/* ================= BUTTON ================= */
+.btn-share {
+  background: linear-gradient(135deg, #6366f1, #3b82f6);
+  border: none;
+  color: white;
+  padding: 6px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.btn-share:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 20px rgba(99,102,241,0.5);
+}
+
+/* ================= DATATABLE FIX ================= */
+.dataTables_wrapper .dataTables_filter input {
+  background: #020617;
+  color: #fff;
+  border: 1px solid rgba(148,163,184,0.25);
+}
+
+.dataTables_wrapper .dt-buttons button {
+  background: linear-gradient(135deg, #6366f1, #3b82f6);
+  border: none;
+  color: white;
+  border-radius: 8px;
+  margin-right: 6px;
+}
+</style>
+
+<div class="container-fluid mt-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-11">
+
+      <div class="exam-wrapper">
+
+        <h3 class="exam-title">EXAM HISTORY</h3>
+
+        {% if tests is not none and tests %}
+
+        <!-- CENTER ANIMATION -->
+        <div class="exam-animation-wrapper">
+          <div class="exam-animation-glow">
+            <lottie-player
+              src="https://assets1.lottiefiles.com/packages/lf20_ljr4k6s1.json"
+              background="transparent"
+              speed="1"
+              style="width: 200px; height: 200px;"
+              loop autoplay>
+            </lottie-player>
+          </div>
         </div>
+
+        <!-- TABLE -->
+        <div class="table-responsive">
+          <table id="example" class="table dark-table text-center align-middle">
+            <thead>
+              <tr>
+                <th>Test ID</th>
+                <th>Password</th>
+                <th>Subject</th>
+                <th>Topic</th>
+                <th>Share</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for test in tests %}
+              <tr>
+                <td class="fw-bold">{{ test['test_id'] }}</td>
+                <td>{{ test['password'] }}</td>
+                <td>{{ test['subject'] }}</td>
+                <td>{{ test['topic'] }}</td>
+                <td>
+                  <a href="/{{ session.email }}/{{ test['test_id'] }}/share_details"
+                     class="btn btn-share">
+                    Share
+                  </a>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        {% else %}
+
+        <!-- EMPTY STATE -->
+        <div class="text-center py-5">
+          <div class="exam-animation-wrapper">
+            <div class="exam-animation-glow">
+              <lottie-player
+                src="https://assets7.lottiefiles.com/datafiles/vhvOcuUkH41HdrL/data.json"
+                background="transparent"
+                speed="1"
+                style="width: 240px; height: 240px;"
+                loop autoplay>
+              </lottie-player>
+            </div>
+          </div>
+          <h4 class="text-secondary mt-3">No Records Found</h4>
+        </div>
+
+        {% endif %}
+
+      </div>
+
     </div>
+  </div>
 </div>
+
 <script>
-    $(document).ready(function() {
-    $('#example').DataTable( {
-        dom: 'Bfrtip',
-        buttons: [
-            'copy', 'csv', 'excel', 'pdf', 'print'
-        ]
-    } );
-} );
+$(document).ready(function () {
+  $('#example').DataTable({
+    dom: 'Bfrtip',
+    buttons: ['copy', 'csv', 'excel', 'pdf', 'print']
+  });
+});
 </script>
+
 {% endblock %}
