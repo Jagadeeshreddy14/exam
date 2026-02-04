@@ -31,7 +31,7 @@ from flask_cors import CORS, cross_origin
 import camera
 
 app = Flask(__name__)
-app.debug = True
+app.debug = True # Enable debug mode for auto-reload
 
 app.config['MYSQL_HOST'] = '127.0.0.1'
 app.config['MYSQL_USER'] = 'root'

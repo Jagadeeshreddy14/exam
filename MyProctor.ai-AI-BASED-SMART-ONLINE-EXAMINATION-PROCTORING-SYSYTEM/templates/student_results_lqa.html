@@ -1,55 +1,265 @@
 {% extends 'professor_dashboard.html' %}
 {% block body %}
-<div class="row align-items-center d-flex  justify-content-center">
-    <div class="col-12 mb-4">
-        <div class="card border-light shadow-sm components-section align-items-center d-flex  justify-content-center">
-            <div class="card-body align-items-center d-flex justify-content-center">     
-                <div class="row mb-4">
-                    {% if(data is not none and data) %}
-    <div class="col-lg-12 col-sm-16">
-        <h3 class="h3 text-center">STUDENT RESULTS</h3>  
-      </div>
-        <div class="table-responsive">
-            <table id="example" class="display nowrap" style="width:100%">
-                <thead class="thead-light">
-        <tr>
-            <th scope="col">Name</th>
-            <th scope="col">Email</th>
-            <th scope="col">Marks</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for result in data %}
-            <tr>
-                <td>{{result['name']}}</td>
-                <td>{{result['email']}}</td>
-                <td>{{result['marks']}}</td>
-            </tr>
-        {% endfor %}
-    </tbody>
-</table>
-                            </div>
-{% else %}
-                            <div class="col-lg-12 col-sm-16">
-                                <center><lottie-player src="https://assets7.lottiefiles.com/datafiles/vhvOcuUkH41HdrL/data.json"  background="transparent"  speed="1"  style="width: 300px; height: 300px;"  loop  autoplay></lottie-player></center>
-                                <h3 class="h3 text-center">
-                                    No Records Found!
-                                </h3>  
-                              </div>
-                            {% endif %}  
-                                              </div>
-                    </div>
-                </div>
+
+<style>
+/* ================= ANIMATIONS ================= */
+@keyframes slideInUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes float {
+  0% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(2deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
+
+@keyframes gridMove {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(40px); }
+}
+
+/* ================= MAIN WRAPPER ================= */
+.results-wrapper {
+  background: radial-gradient(circle at top, #0b1220 0%, #020617 70%);
+  border-radius: 20px;
+  padding: 3rem;
+  box-shadow: 
+    0 0 0 1px rgba(99,102,241,0.15),
+    0 40px 100px rgba(0,0,0,0.9);
+  max-width: 1100px;
+  margin: 3rem auto;
+  min-height: 70vh;
+  animation: slideInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+/* Cyber Grid Background */
+.results-wrapper::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background-image: 
+    linear-gradient(rgba(99, 102, 241, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99, 102, 241, 0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+  animation: gridMove 20s linear infinite;
+  transform: perspective(500px) rotateX(20deg);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* ================= HEADER ================= */
+.results-title {
+  text-align: center;
+  margin-bottom: 2.5rem;
+  position: relative;
+  z-index: 10;
+}
+
+.results-title h3 {
+  color: #ffffff;
+  font-weight: 800;
+  letter-spacing: 1px;
+  font-size: 2.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  text-shadow: 0 0 30px rgba(99, 102, 241, 0.3);
+}
+
+.title-anim-container {
+  width: 70px;
+  height: 70px;
+  display: inline-block;
+  animation: float 5s ease-in-out infinite;
+}
+
+.results-title span.text-highlight {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b, #fbbf24);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ================= DATATABLE OVERRIDES ================= */
+.dataTables_wrapper .dataTables_length, 
+.dataTables_wrapper .dataTables_filter, 
+.dataTables_wrapper .dataTables_info, 
+.dataTables_wrapper .dataTables_processing, 
+.dataTables_wrapper .dataTables_paginate {
+  color: #94a3b8 !important;
+  margin-bottom: 1rem;
+}
+
+.dataTables_wrapper .dataTables_filter input {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: white;
+  border-radius: 6px;
+  padding: 5px 10px;
+}
+
+.dataTables_wrapper .dataTables_length select {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: white;
+  border-radius: 6px;
+  padding: 5px;
+}
+
+table.dataTable tbody tr {
+  background-color: transparent !important;
+  transition: background-color 0.2s;
+}
+
+table.dataTable tbody tr:hover {
+  background-color: rgba(99, 102, 241, 0.1) !important;
+}
+
+table.dataTable td {
+  border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+  color: #e2e8f0;
+  vertical-align: middle;
+  padding: 12px 10px;
+}
+
+table.dataTable th {
+  border-bottom: 1px solid rgba(255,255,255,0.1) !important;
+  color: #818cf8;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 15px 10px;
+}
+
+/* Buttons (Copy, CSV, etc) */
+.dt-buttons .dt-button {
+  background: rgba(30, 41, 59, 0.6) !important;
+  color: #fff !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  border-radius: 6px !important;
+  font-size: 0.85rem !important;
+  margin-right: 5px !important;
+  transition: all 0.2s !important;
+}
+
+.dt-buttons .dt-button:hover {
+  background: rgba(99, 102, 241, 0.4) !important;
+  transform: translateY(-2px);
+}
+
+.page-item.active .page-link {
+  background-color: #6366f1 !important;
+  border-color: #6366f1 !important;
+}
+
+.page-link {
+  background-color: rgba(15, 23, 42, 0.6) !important;
+  border-color: rgba(255,255,255,0.05) !important;
+  color: #94a3b8 !important;
+}
+
+/* ================= EMPTY STATE ================= */
+.empty-state {
+  text-align: center;
+  padding: 5rem;
+  color: #94a3b8;
+}
+
+.empty-state h3 {
+  color: #f1f5f9;
+  margin-top: 1.5rem;
+  font-weight: 700;
+}
+</style>
+
+<div class="container-fluid mt-5 mb-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-12">
+
+        <div class="results-wrapper">
+
+            {% if data is not none and data %}
+
+            <div class="results-title">
+                <h3>
+                  <div class="title-anim-container">
+                    <lottie-player
+                        src="https://assets2.lottiefiles.com/packages/lf20_touohxv0.json"
+                        background="transparent"
+                        speed="1"
+                        style="width: 100%; height: 100%;"
+                        loop autoplay>
+                    </lottie-player>
+                  </div>
+                  <span class="text-highlight">STUDENT RESULTS</span>
+                </h3>
             </div>
+
+            <div class="table-responsive">
+                <table id="example" class="display nowrap dark-table" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th scope="col">Name</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Marks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for result in data %}
+                        <tr>
+                            <td>{{result['name']}}</td>
+                            <td>{{result['email']}}</td>
+                            <td class="text-warning font-weight-bold">{{result['marks']}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            {% else %}
+
+            <div class="empty-state">
+                <lottie-player 
+                    src="https://assets7.lottiefiles.com/datafiles/vhvOcuUkH41HdrL/data.json"  
+                    background="transparent"  
+                    speed="1"  
+                    style="width: 300px; height: 300px;"  
+                    loop  autoplay>
+                </lottie-player>
+                <h3>No Records Found!</h3>  
+            </div>
+
+            {% endif %}
+
         </div>
+
+    </div>
+</div>
+
 <script>
-    $(document).ready(function() {
+$(document).ready(function() {
     $('#example').DataTable( {
         dom: 'Bfrtip',
         buttons: [
             'copy', 'csv', 'excel', 'pdf', 'print'
-        ]
+        ],
+        "pageLength": 10,
+        "language": {
+            "search": "_INPUT_",
+            "searchPlaceholder": "Search results..."
+        },
+        "initComplete": function() {
+            $('.dataTables_filter input').addClass('form-control-sm');
+        }
     } );
 } );
 </script>
+
 {% endblock %}

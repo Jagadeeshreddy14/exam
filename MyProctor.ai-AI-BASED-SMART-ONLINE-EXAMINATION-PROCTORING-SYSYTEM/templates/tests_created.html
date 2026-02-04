@@ -1,48 +1,328 @@
 {% extends 'professor_dashboard.html' %}
 {% block body %}
-<div class="row align-items-center d-flex  justify-content-center">
-    <div class="col-12 mb-4">
-        <div class="card border-light shadow-sm components-section align-items-center d-flex  justify-content-center">
-            <div class="card-body align-items-center d-flex justify-content-center">     
-                <div class="row mb-4">
-                    {% if(cresults is not none) %}
-    <div class="col-lg-12 col-sm-16">
-        <h3 class="h3 text-center">STUDENT RESULTS</h3>  
-      </div>
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-centered table-nowrap mb-0 rounded">
-                <thead class="thead-light">
-                    <tr>
-                                <th class="border-0" scope="col" >Test ID</th>
-                                <th class="border-0" scope="col" >Subject</th>
-                                <th class="border-0" scope="col" >Topic</th>
-								<th class="border-0" scope="col" >Result</th>
-                            </tr>
-							 <tbody>
-            {% for test in tests %}
-                            <tr>
-								<td>{{test['test_id']}}</td>
-								<td>{{test['subject']}}</td>
-								<td>{{test['topic']}}</td>
-								<td><a class="btn btn-primary" href="/{{session.email}}/tests-created/{{test['test_id']}}">View Result</a></td>
-                             </tr>
-            {% endfor %}
-                                  </tbody>
-                        </table>
-                    </div>
-                </div>
+
+<style>
+/* ================= ANIMATIONS ================= */
+@keyframes slideInUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInStagger {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes float {
+  0% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(2deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes scan {
+  0% { top: -100%; opacity: 0; }
+  50% { opacity: 1; }
+  100% { top: 200%; opacity: 0; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes gridMove {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(40px); }
+}
+
+/* ================= MAIN WRAPPER ================= */
+.results-wrapper {
+  background: radial-gradient(circle at top, #0b1220 0%, #020617 70%);
+  border-radius: 20px;
+  padding: 3rem;
+  box-shadow: 
+    0 0 0 1px rgba(99,102,241,0.15),
+    0 40px 100px rgba(0,0,0,0.9);
+  max-width: 1000px;
+  margin: 3rem auto;
+  min-height: 70vh;
+  animation: slideInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+/* Cyber Grid Background */
+.results-wrapper::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background-image: 
+    linear-gradient(rgba(99, 102, 241, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99, 102, 241, 0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+  animation: gridMove 20s linear infinite;
+  transform: perspective(500px) rotateX(20deg);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Glass shine effect */
+.results-wrapper::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(to right, transparent, rgba(255,255,255,0.02), transparent);
+  transform: skewX(-25deg);
+  animation: shine 8s infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes shine {
+  0% { left: -100%; }
+  20% { left: 200%; }
+  100% { left: 200%; }
+}
+
+/* ================= HEADER ================= */
+.results-title {
+  text-align: center;
+  margin-bottom: 3rem;
+  position: relative;
+  z-index: 10;
+}
+
+.results-title h3 {
+  color: #ffffff;
+  font-weight: 800;
+  letter-spacing: 1px;
+  font-size: 2.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  text-shadow: 0 0 30px rgba(99, 102, 241, 0.3);
+}
+
+.title-anim-container {
+  width: 70px;
+  height: 70px;
+  display: inline-block;
+  filter: drop-shadow(0 0 15px rgba(251, 191, 36, 0.4));
+}
+
+.results-title span.text-highlight {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b, #fbbf24);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 3s linear infinite;
+}
+
+/* ================= TABLE CONTAINER ================= */
+.table-container {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.05);
+  background: rgba(15, 23, 42, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+/* Scanner line effect */
+.table-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  background: linear-gradient(to right, transparent, rgba(99, 102, 241, 0.5), transparent);
+  box-shadow: 0 0 15px rgba(99, 102, 241, 0.5);
+  animation: scan 4s ease-in-out infinite;
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* ================= TABLE STYLES ================= */
+.dark-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  position: relative;
+  z-index: 5;
+}
+
+.dark-table thead th {
+  background: rgba(15, 23, 42, 0.8);
+  color: #94a3b8;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 1.2px;
+  padding: 1.5rem 1.5rem;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.table-row-item {
+  animation: fadeInStagger 0.5s ease-out forwards;
+  opacity: 0;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  background: transparent;
+}
+
+.table-row-item:nth-child(even) {
+  background: rgba(255,255,255,0.01);
+}
+
+.table-row-item:hover {
+  background: rgba(99, 102, 241, 0.1);
+  transform: scale(1.005);
+}
+
+.dark-table td {
+  padding: 1.4rem 1.5rem;
+  color: #e2e8f0;
+  font-weight: 500;
+  vertical-align: middle;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+.dark-table td:first-child {
+  color: #fbbf24;
+  font-family: 'Courier New', monospace;
+  font-weight: 700;
+  font-size: 1.1rem;
+  text-shadow: 0 0 10px rgba(251, 191, 36, 0.2);
+}
+
+.dark-table td:last-child {
+  text-align: right;
+}
+
+/* ================= ACTION BUTTON ================= */
+.btn-result {
+  background: linear-gradient(135deg, #4f46e5, #6366f1, #4f46e5);
+  background-size: 200% auto;
+  border: 1px solid rgba(255,255,255,0.1);
+  color: white;
+  padding: 10px 24px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none !important;
+}
+
+.btn-result:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(79, 70, 229, 0.5);
+  animation: shimmer 2s linear infinite;
+  color: white;
+}
+
+/* ================= EMPTY STATE ================= */
+.empty-state {
+  text-align: center;
+  padding: 5rem;
+  color: #94a3b8;
+  animation: scaleIn 0.6s ease-out forwards;
+}
+
+.empty-state h3 {
+  color: #f1f5f9;
+  margin-top: 1.5rem;
+  font-weight: 700;
+}
+</style>
+
+<div class="container-fluid mt-5 mb-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-11">
+
+        <div class="results-wrapper">
+
+            {% if tests is not none and tests %}
+
+            <div class="results-title">
+                <h3>
+                  <div class="title-anim-container">
+                    <lottie-player
+                        src="https://assets10.lottiefiles.com/packages/lf20_touohxv0.json"
+                        background="transparent"
+                        speed="1"
+                        style="width: 100%; height: 100%;"
+                        loop autoplay>
+                    </lottie-player>
+                  </div>
+                  <span class="text-highlight">STUDENT RESULTS</span>
+                </h3>
+            </div>
+
+            <div class="table-container">
+                <table class="dark-table">
+                    <thead>
+                        <tr>
+                            <th>Test ID</th>
+                            <th>Subject</th>
+                            <th>Topic</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for test in tests %}
+                        <tr class="table-row-item" style="animation-delay: {{ loop.index * 0.1 }}s;">
+                            <td>{{ test['test_id'] }}</td>
+                            <td>{{ test['subject'] }}</td>
+                            <td>{{ test['topic'] }}</td>
+                            <td>
+                                <a class="btn btn-result" href="/{{ session.email }}/tests-created/{{ test['test_id'] }}">
+                                    View Result <i class="fas fa-arrow-right"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            {% else %}
+
+            <div class="empty-state">
+                <lottie-player
+                    src="https://assets7.lottiefiles.com/datafiles/vhvOcuUkH41HdrL/data.json"
+                    background="transparent"
+                    speed="1"
+                    style="width: 250px; height: 250px; margin: 0 auto; opacity: 0.8;"
+                    loop autoplay>
+                </lottie-player>
+
+                <h3>No Records Found!</h3>
+                <p>No student results available at this time.</p>
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
 </div>
-{% else %}
-<div class="col-lg-12 col-sm-16">
-    <center><lottie-player src="https://assets7.lottiefiles.com/datafiles/vhvOcuUkH41HdrL/data.json"  background="transparent"  speed="1"  style="width: 300px; height: 300px;"  loop  autoplay></lottie-player></center>
-    <h3 class="h3 text-center">
-        No Records Found!
-    </h3>  
-  </div>
-{% endif %}
-</div>
-</div>
-</div>
-</div>
+
 {% endblock %}
