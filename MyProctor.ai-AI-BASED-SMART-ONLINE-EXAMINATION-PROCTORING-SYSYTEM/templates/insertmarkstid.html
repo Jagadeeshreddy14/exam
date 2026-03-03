@@ -2,179 +2,208 @@
 {% block body %}
 
 <style>
-/* ================= MAIN WRAPPER ================= */
+/* ================= ANIMATIONS ================= */
+@keyframes slideInUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes float {
+  0% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(2deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
+
+@keyframes gridMove {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(40px); }
+}
+
+/* ================= PAGE CENTERING ================= */
 .insert-wrapper {
-  background: radial-gradient(circle at top, #0b1220 0%, #020617 70%);
-  border-radius: 20px;
-  padding: 3rem 2.5rem;
-  box-shadow: 
-    0 0 0 1px rgba(99,102,241,0.25),
-    0 40px 90px rgba(0,0,0,0.8);
-  max-width: 750px;
-  margin: 3rem auto;
-  text-align: center;
+    min-height: calc(100vh - 120px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    padding: 2rem;
+}
+
+/* Cyber Grid Background */
+.insert-wrapper::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background-image: 
+    linear-gradient(rgba(99, 102, 241, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99, 102, 241, 0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+  animation: gridMove 20s linear infinite;
+  transform: perspective(500px) rotateX(20deg);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ================= MAIN CARD ================= */
+.insert-card {
+    width: 100%;
+    max-width: 600px;
+    padding: 3rem 2.5rem;
+    background: radial-gradient(circle at top, #0b1220 0%, #020617 70%);
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.12);
+    box-shadow:
+        0 0 0 1px rgba(99,102,241,0.15),
+        0 40px 80px rgba(0,0,0,0.8);
+    text-align: center;
+    position: relative;
+    z-index: 10;
+    backdrop-filter: blur(10px);
+    animation: slideInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
 /* ================= HEADER ================= */
-.insert-title {
-  color: #ffffff;
-  font-weight: 800;
-  letter-spacing: 0.5px;
-  margin-bottom: 2rem;
-  font-size: 1.8rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
+.insert-card h2 {
+    color: #ffffff;
+    font-weight: 800;
+    letter-spacing: 1px;
+    margin-bottom: 2rem;
+    font-size: 1.8rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    text-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
 }
 
-.insert-title span {
-  background: rgba(99,102,241,0.2);
-  border-radius: 50%;
-  width: 45px;
-  height: 45px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.4rem;
-  box-shadow: 0 0 15px rgba(99,102,241,0.4);
-  color: #a5b4fc;
+.title-anim-container {
+  width: 120px;
+  height: 120px;
+  display: inline-block;
+  animation: float 5s ease-in-out infinite;
 }
 
 /* ================= FORM ELEMENTS ================= */
-.insert-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  text-align: left;
+.form-group {
+    margin-bottom: 2rem;
+    text-align: left;
 }
 
-.insert-form label {
-  color: #c7d2fe;
-  font-weight: 600;
-  font-size: 0.95rem;
-  margin-left: 0.2rem;
+.form-group label {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 0.8rem;
+    display: block;
 }
 
 .custom-select {
-  background: #0f172a;
-  border: 1px solid rgba(148,163,184,0.2);
-  color: #ffffff;
-  padding: 0.9rem 1.2rem;
-  border-radius: 12px;
-  font-size: 1rem;
-  width: 100%;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  appearance: none;
-  -webkit-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 1.2rem center;
-  background-size: 12px;
+    width: 100%;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #e2e8f0;
+    padding: 1rem 1.2rem;
+    border-radius: 12px;
+    font-weight: 500;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    appearance: none; 
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1.2rem;
+}
+
+.custom-select option {
+    background-color: #0f172a;
+    color: #fff;
+    padding: 12px;
 }
 
 .custom-select:focus {
-  outline: none;
-  border-color: #6366f1;
-  box-shadow: 0 0 0 3px rgba(99,102,241,0.25);
-  background-color: #1e293b;
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 4px rgba(99,102,241,0.2);
+    background-color: rgba(30, 41, 59, 0.8);
 }
 
 /* ================= BUTTON ================= */
 .insert-btn {
-  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-  border: 1px solid rgba(255,255,255,0.1);
-  color: #ffffff;
-  font-weight: 700;
-  letter-spacing: 1px;
-  padding: 1.1rem;
-  border-radius: 12px;
-  width: 100%;
-  margin-top: 1rem;
-  transition: all 0.3s ease;
-  text-transform: uppercase;
-  font-size: 0.95rem;
-  cursor: pointer;
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    border: none;
+    padding: 1rem 3rem;
+    border-radius: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #ffffff;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    width: 100%;
+    box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.4);
 }
 
 .insert-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 30px -5px rgba(79, 70, 229, 0.6); 
-  background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+    transform: translateY(-3px);
+    box-shadow: 0 20px 40px -10px rgba(79, 70, 229, 0.6);
+    background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
 }
 
 /* ================= EMPTY STATE ================= */
-.no-data {
-  text-align: center;
-  padding: 3rem;
-  color: #94a3b8;
-}
-
-.no-data h4 {
-  color: #f1f5f9;
-  font-size: 1.4rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-  margin-top: 1rem;
+.empty-state h4 {
+    color: #94a3b8;
+    font-weight: 600;
+    margin-top: 1rem;
 }
 </style>
 
-<div class="container-fluid mt-5 mb-5">
-  <div class="row justify-content-center">
-    <div class="col-lg-12">
+<div class="insert-wrapper">
+    <div class="insert-card">
 
-        <div class="insert-wrapper">
+        {% if cresults is not none and cresults %}
 
-            {% if cresults is not none %}
-
-            <div class="text-center mb-4">
-                <lottie-player 
-                    src="https://assets9.lottiefiles.com/private_files/lf30_hilbd2uq.json" 
-                    background="transparent" 
-                    speed="1" 
-                    style="width: 250px; height: 250px; margin: 0 auto;" 
-                    loop autoplay>
-                </lottie-player>
-            </div>
-
-            <h3 class="insert-title">
-                <span>📝</span> INSERT MARKS
-            </h3>
-
-            <form action="insertmarksdetails" method="POST" class="insert-form">
-                <div>
-                    <label for="livebox">Choose Exam ID</label>
-                    <select id="livebox" name="choosetid" class="custom-select" required>
-                        {% for test in cresults %}
-                        <option value="{{ test }}">{{ test }}</option>
-                        {% endfor %}
-                    </select>
+        <h2>
+            <div class="title-anim-container">
+                <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 48px;">
+                    📊
                 </div>
+            </div>
+            INSERT MARKS
+        </h2>
 
-                <button type="submit" class="insert-btn">
-                    View & Insert Marks
-                </button>
-            </form>
-
-            {% else %}
-
-            <div class="no-data">
-                <lottie-player 
-                    src="https://assets7.lottiefiles.com/datafiles/vhvOcuUkH41HdrL/data.json" 
-                    background="transparent" 
-                    speed="1" 
-                    style="width: 280px; height: 280px; margin: 0 auto; opacity: 0.8;" 
-                    loop autoplay>
-                </lottie-player>
-
-                <h4>No Pending Records</h4>
-                <p>No exams found to insert marks for, or all marks have already been submitted.</p>
+        <form action="insertmarksdetails" method="POST">
+            <div class="form-group">
+                <label>Select Examination ID</label>
+                <select name="choosetid" class="custom-select" required>
+                    <option value="" disabled selected>Choose an exam...</option>
+                    {% for test in cresults %}
+                    <option value="{{ test }}">{{ test }}</option>
+                    {% endfor %}
+                </select>
             </div>
 
-            {% endif %}
+            <button type="submit" class="insert-btn">
+                PROCEED TO GRADING <i class="fas fa-arrow-right ml-2"></i>
+            </button>
+        </form>
 
+        {% else %}
+
+        <div class="empty-state">
+            <div style="width: 250px; height: 250px; margin: 0 auto; opacity: 0.7; display: flex; align-items: center; justify-content: center; font-size: 64px;">
+                ✅
+            </div>
+            <h4>No Pending Exams</h4>
+            <p class="text-muted mt-2">All ended exams have been graded or none exist.</p>
         </div>
+
+        {% endif %}
 
     </div>
 </div>

@@ -1,37 +1,238 @@
 {% extends 'professor_dashboard.html' %}
 {% block body %}
-<div class="row align-items-center d-flex  justify-content-center">
-    <div class="col-12 mb-4">
-        <div class="card border-light shadow-sm components-section align-items-center d-flex  justify-content-center">
-            <div class="card-body align-items-center d-flex justify-content-center">     
-                <div class="row mb-4">
-                    <div class="col-lg-12 col-sm-16">
-							<h3 class="h3 text-center">REPORT PROBLEMS</h3>  
-                            </div>
-                            <img src="{{ url_for('static', filename='report_bug.png') }}">
-                            <div class="card-body">
-							    <form action="/report_professor_email" method="POST" class="mt-4">
-                                    <div class="form-group">
-                                        <label class="my-1 mr-2" for="inlineFormCustomSelectPref">Choose Problem Category</label>
-                                        <select class="custom-select my-1 mr-sm-2" id="inlineFormCustomSelectPref" name="prob_type" required>
-                                            <option value="Login/Register/Face Verification">Login/Register/Face Verification</option>
-                                            <option value="Exam/Create/View/Update/Delete">Exam/Create/View/Update/Delete</option>
-                                            <option value="Student Monitoring">Student Monitoring</option>
-                                            <option value="Insert Marks/Publish Results">Insert Marks/Publish Results</option>
-                                            <option value="Payment">Payment</option>
-                                            <option value="Others">Others</option>
-                                        </select>
-                                    </div>  
-                                    <div class="form-group">
-                                        <label class="h6" for="exampleFormControlTextarea1">Your message</label>
-                                        <textarea name="rquery" class="form-control" placeholder="How can we help? Any Problem/Suggestion" rows="4" required></textarea>
-                                    </div>
-  <input type="submit" class="btn btn-primary" value="REPORT!">
-    </form>
-  </div>
-                    </div>
+
+<style>
+/* ================= ANIMATIONS ================= */
+@keyframes slideInUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes float {
+  0% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(2deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
+
+@keyframes gridMove {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(40px); }
+}
+
+/* ================= PAGE CENTERING ================= */
+.report-wrapper {
+    min-height: calc(100vh - 120px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    padding: 2rem;
+}
+
+/* Cyber Grid Background */
+.report-wrapper::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background-image: 
+    linear-gradient(rgba(99, 102, 241, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99, 102, 241, 0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+  animation: gridMove 20s linear infinite;
+  transform: perspective(500px) rotateX(20deg);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ================= MAIN CARD ================= */
+.report-card {
+    width: 100%;
+    max-width: 650px;
+    padding: 3rem 2.5rem;
+    background: radial-gradient(circle at top, #0b1220 0%, #020617 70%);
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.12);
+    box-shadow:
+        0 0 0 1px rgba(239,68,68,0.2),
+        0 40px 80px rgba(0,0,0,0.8);
+    text-align: center;
+    position: relative;
+    z-index: 10;
+    backdrop-filter: blur(10px);
+    animation: slideInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+/* ================= HEADER ================= */
+.report-card h2 {
+    color: #ffffff;
+    font-weight: 800;
+    letter-spacing: 1px;
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    text-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+}
+
+.report-header-images {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 10px;
+}
+
+.report-img {
+    height: 100px;
+    width: auto;
+    filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));
+    animation: float 6s ease-in-out infinite;
+}
+
+.title-anim-container {
+  width: 90px;
+  height: 90px;
+  display: inline-block;
+  animation: float 6s ease-in-out infinite reverse;
+}
+
+/* ================= FORM ELEMENTS ================= */
+.form-group {
+    margin-bottom: 2rem;
+    text-align: left;
+}
+
+.form-group label {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #cbd5e1;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 0.8rem;
+    display: block;
+}
+
+.custom-select, .form-control {
+    width: 100%;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #e2e8f0;
+    padding: 1rem 1.2rem;
+    border-radius: 12px;
+    font-weight: 500;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+/* Enhanced Select UI */
+.custom-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ef4444' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1em;
+    cursor: pointer;
+}
+
+.custom-select option {
+    background-color: #0f172a;
+    color: #fff;
+    padding: 12px;
+}
+
+.custom-select:focus, .form-control:focus {
+    outline: none;
+    border-color: #ef4444;
+    box-shadow: 0 0 0 4px rgba(239,68,68,0.15);
+    background-color: rgba(30, 41, 59, 0.8);
+}
+
+.custom-select:hover {
+    border-color: #f87171;
+    background-color: rgba(30, 41, 59, 0.5);
+}
+
+textarea.form-control {
+    min-height: 120px;
+    resize: vertical;
+}
+
+/* ================= BUTTON ================= */
+.submit-btn {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    border: none;
+    padding: 1rem 3rem;
+    border-radius: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #ffffff;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    width: 100%;
+    margin-top: 1rem;
+    box-shadow: 0 10px 25px -5px rgba(220, 38, 38, 0.4);
+}
+
+.submit-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 20px 40px -10px rgba(220, 38, 38, 0.6);
+    background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+}
+
+</style>
+
+<div class="report-wrapper">
+    <div class="report-card">
+
+        <h2>
+            <div class="report-header-images">
+                <img src="{{ url_for('static', filename='report_bug.png') }}" class="report-img" alt="Report Bug">
+                <div class="title-anim-container">
+                    <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 48px;">
+                    💡
+                </div>
                 </div>
             </div>
-        </div>
-       </div>
+            REPORT ISSUE
+        </h2>
+
+        <form action="/report_professor_email" method="POST">
+            
+            <div class="form-group">
+                <label for="inlineFormCustomSelectPref">Problem Category</label>
+                <div class="select-wrapper">
+                    <select class="custom-select" id="inlineFormCustomSelectPref" name="prob_type" required>
+                        <option value="" disabled selected>Select a category...</option>
+                        <option value="Login/Register/Face Verification"> Login / Register / Face Verification</option>
+                        <option value="Exam/Create/View/Update/Delete"> Exam Management</option>
+                        <option value="Student Monitoring"> Student Monitoring</option>
+                        <option value="Insert Marks/Publish Results"> Grading & Results</option>
+                        <option value="Payment"> Payment & Credits</option>
+                        <option value="Others"> Other Issues</option>
+                    </select>
+                </div>
+            </div>  
+
+            <div class="form-group">
+                <label for="exampleFormControlTextarea1">Description</label>
+                <textarea name="rquery" class="form-control" placeholder="Please describe the issue in detail..." rows="4" required></textarea>
+            </div>
+
+            <button type="submit" class="submit-btn" value="REPORT!">
+                SUBMIT REPORT
+            </button>
+
+        </form>
+
+    </div>
+</div>
+
 {% endblock %}

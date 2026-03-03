@@ -1080,7 +1080,15 @@ def insertmarkstid():
 		now = datetime.strptime(now,"%Y-%m-%d %H:%M:%S")
 		testids = []
 		for a in cresults:
-			if datetime.strptime(str(a['end']),"%Y-%m-%d %H:%M:%S") < now:
+			endTime = a['end']
+			if isinstance(endTime, str):
+				try:
+					endTime = datetime.strptime(endTime, "%Y-%m-%d %H:%M:%S")
+				except ValueError:
+					# Try another format or skip
+					continue
+			
+			if endTime < now:
 				testids.append(a['test_id'])
 		cur.close()
 		return render_template("insertmarkstid.html", cresults = testids)
